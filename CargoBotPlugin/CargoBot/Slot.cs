@@ -36,10 +36,10 @@ namespace CargoBot
 				BeginRequire = false
 			})
 		{
-			this.Value = value;
-			this.Condition = condition;
-			this.Index = index % 2;
-			this.WithCondition = withCondition;
+			Value = value;
+			Condition = condition;
+			Index = index % 2;
+			WithCondition = withCondition;
 			DrawWithSection = true;
 		}
 

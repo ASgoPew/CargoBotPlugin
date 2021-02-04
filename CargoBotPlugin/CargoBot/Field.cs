@@ -26,7 +26,7 @@ namespace CargoBot
 		{
 			Divider = 1 + 2 * left_border + max_columns * box_size + (max_columns - 1) * box_delay;
 			TileType = tile;
-			this.TileColor = tile_color;
+			TileColor = tile_color;
 
 			var crane_style = new UIStyle() { Wall = Style.Wall, WallColor = Style.WallColor, TileColor = PaintID2.Brown };
 			Crane = Add(new Crane(0, 0, max_columns, max_boxes, box_size, box_delay, left_border, tile, crane_style));

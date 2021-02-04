@@ -11,11 +11,14 @@ using Terraria;
 using TerrariaApi.Server;
 using TerrariaUI;
 using TerrariaUI.Base;
+using TerrariaUI.Base.Style;
 using TerrariaUI.Widgets;
 using TerrariaUI.Widgets.Data;
 using TerrariaUI.Widgets.Media;
+using TShockAPI;
+using TShockAPI.DB;
 
-namespace CargoBotPlugin
+namespace CargoBot
 {
     [ApiVersion(2, 1)]
     public class CargoBotPlugin : TerrariaPlugin
@@ -28,6 +31,8 @@ namespace CargoBotPlugin
 
         public override string Description => "CargoBot TUI game";
 
+        public static CargoBotGame CargoBot { get; private set; }
+
         public CargoBotPlugin(Main game)
             : base(game)
         {
@@ -38,7 +43,7 @@ namespace CargoBotPlugin
 
         #region 1
 
-        public static CargoBotLevel level_1 = new CargoBotLevel(1,
+        public static CargoBotLevel level_1 = new CargoBotLevel(1, 1,
             new List<int[]> {
                 new int[] { 0 },
                 new int[] { 0, 1 },
@@ -84,7 +89,7 @@ namespace CargoBotPlugin
         #endregion
         #region 2
 
-        public static CargoBotLevel level_2 = new CargoBotLevel(1,
+        public static CargoBotLevel level_2 = new CargoBotLevel(2, 1,
             new List<int[]> {
                 new int[] { 0 },
                 new int[] { 0, 1 },
@@ -203,35 +208,51 @@ namespace CargoBotPlugin
             int w = 20;
             int h = 4;
 
-            Panel cargopanel = TUI.Create(new Panel("Cargobot", x, y, w, h, provider: FakeProviderAPI.CreateTileProvider("Cargobot", x, y, w, h)));
-            Button summon_button = cargopanel.Add(new Button(0, 0, w, h, "cargobot", null, new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.None, Wall = 155 }));
+            Panel cargopanel = TUI.Create(new Panel("Cargobot", x, y, w, h,
+                provider: FakeProviderAPI.CreateTileProvider("Cargobot", x, y, w, h)));
+            Button summon_button = cargopanel.Add(new Button(0, 0, w, h, "cargobot", null,
+                new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.None, Wall = 155 }));
 
-            Menu cargomenu1 = cargopanel.Add(new Menu(0, 0, Levels.Keys,
-                new ButtonStyle() { Wall = 154, WallColor = 27 },
-                new ButtonStyle() { Wall = 156, WallColor = 27 },
-                "Select pack", new LabelStyle() { Wall = 155, WallColor = 27 },
+            Menu cargomenu1 = cargopanel.Add(new Menu(0, 0, Levels.Keys.Append("back"),
+                new ButtonStyle() { Wall = 154, WallColor = PaintID2.Gray },
+                new ButtonStyle() { Wall = 156, WallColor = PaintID2.Gray },
+                "Select pack", new LabelStyle() { Wall = 155, WallColor = PaintID2.Gray },
                 new Input<string>(null, null))
             ).Disable(false) as Menu;
 
-            CargoBotGame cargobot = cargopanel.Add(new CargoBotGame(0, 0));
-            cargobot.Disable(false);
+            CargoBot = cargopanel.Add(new CargoBotGame(0, 0));
+            CargoBot.Disable(false);
 
             Dictionary<string, Menu> menus = new Dictionary<string, Menu>();
             foreach (string pack in Levels.Keys)
                 menus[pack] = cargopanel.Add(
-                    new Menu(0, 0, Levels[pack].Keys,
-                    new ButtonStyle() { Wall = 154, WallColor = 27 },
-                    new ButtonStyle() { Wall = 156, WallColor = 27 },
-                    "Select level", new LabelStyle() { Wall = 155, WallColor = 27 },
-                    new Input<string>(null, null, (self, value, player) =>
+                    new Menu(0, 0, Levels[pack].Keys.Append("back"),
+                    new ButtonStyle() { Wall = 154, WallColor = PaintID2.Gray },
+                    new ButtonStyle() { Wall = 156, WallColor = PaintID2.Gray },
+                    "Select level", new LabelStyle() { Wall = 155, WallColor = PaintID2.Gray },
+                    new Input<string>(null, null, (self, value, playerIndex) =>
                     {
-                        cargobot.LoadLevel(Levels[pack][value]);
-                        cargopanel.Summon(cargobot);
+                        TSPlayer player = TShock.Players[playerIndex];
+                        if (value == "back")
+                            cargopanel.Unsummon();
+                        else if (!(player.Account is UserAccount account))
+                            player.SendErrorMessage("You have to be logged in to play this game!");
+                        else
+                        {
+                            CargoBot.LoadLevel(Levels[pack][value], player, account.ID);
+                            cargopanel.Summon(CargoBot);
+                        }
                     }))
                 ).Disable(false) as Menu;
 
             summon_button.Callback = (self, t) => cargopanel.Summon(cargomenu1);
-            cargomenu1.Input.Callback = (self, value, player) => cargopanel.Summon(menus[value]);
+            cargomenu1.Input.Callback = (self, value, player) =>
+            {
+                if (value == "back")
+                    cargopanel.Unsummon();
+                else
+                    cargopanel.Summon(menus[value]);
+            };
         }
 
         protected override void Dispose(bool disposing)

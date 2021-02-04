@@ -11,15 +11,15 @@ namespace CargoBot
 {
     public class SlotLine : VisualObject
     {
-        public List<Slot> Slot;
+        public List<Slot> Slots;
 
         public SlotLine(int x, int y, int index, int slot_count)
             : base(x, y, 5 + 4 * slot_count, 5, new UIConfiguration() { UseBegin = false })
         {
-            Slot = new List<Slot>();
+            Slots = new List<Slot>();
             Add(new Label(0, 2, 4, 2, $"f{index + 1}"));
             for (int i = 0; i < slot_count; i++)
-                Slot.Add(Add(new Slot(5 + i * 4, 0, 0, null, i)));
+                Slots.Add(Add(new Slot(5 + i * 4, 0, 0, null, i)));
         }
     }
 }

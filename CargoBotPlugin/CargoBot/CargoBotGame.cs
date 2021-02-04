@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,49 +22,59 @@ namespace CargoBot
 		public ToolBox Toolbox;
 		public Button RunButton;
 		public Button HintButton;
+		public Checkbox SpeedCheckbox;
 		public Button ExitButton;
 		public bool Playing;
+		public int PlayingIndex = 0;
 		public int RunLine;
 		public int RunSlot;
 		public int RunDelay;
 		public CargoBotLevel Level;
 		public Slot OldSlot;
+		public TSPlayer Player;
+		public int User;
+
+		public bool Fast => RunDelay == 300;
 
 		public CargoBotGame(int x, int y)
 			: base(x, y, 56, 47, new UIConfiguration() { UseEnd = true, BeginRequire = false },
 				  new ContainerStyle() { Wall = 155 })
 		{
-			this.Field = this.Add(new Field(1, 1, 8, 6, 2, 2, 2, 1, TileID.EmeraldGemspark,
-				PaintID2.Shadow, new UIStyle() { Wall = 155, WallColor = 26 }));
-			this.Add(new VisualObject(1, this.Field.Height + 5, 4, 22, new UIConfiguration() { UseBegin = false },
+			Field = Add(new Field(1, 1, 8, 6, 2, 2, 2, 1, TileID.EmeraldGemspark,
+				PaintID2.Shadow, new UIStyle() { Wall = 155, WallColor = PaintID2.White }));
+			Add(new VisualObject(1, Field.Height + 5, 4, 22, new UIConfiguration() { UseBegin = false },
 				new UIStyle() { Wall = WallID.SapphireGemspark }));
 
-			this.Lines = new List<SlotLine>();
+			Lines = new List<SlotLine>();
 			for (int i = 0; i < 4; i++)
-				this.Lines.Add(this.Add(new SlotLine(1, this.Field.Height + 4 + i * 6, i, i < 3 ? 8 : 5)));
+				Lines.Add(Add(new SlotLine(1, Field.Height + 4 + i * 6, i, i < 3 ? 8 : 5)));
 
-			this.ToolboxLabel = this.Add(new Label(39, 21, 16, 2, "toolbox"));
-			this.Toolbox = this.Add(new ToolBox(39, 24, 4, 4));
+			ToolboxLabel = Add(new Label(39, 21, 16, 2, "toolbox"));
+			Toolbox = Add(new ToolBox(39, 24, 4, 4));
 
-			this.RunButton = this.Add(new Button(27, 42, 8, 4, "run", null,
+			RunButton = Add(new Button(27, 42, 8, 4, "run", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156 },
-				(self, t) => this.Run()));
+				(self, t) => Run()));
 
-			this.HintButton = this.Add(new Button(36, 42, 10, 4, "hint", null,
+			HintButton = Add(new Button(36, 42, 10, 4, "hint", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.Gray },
 				(self, t) => TShock.Players[t.PlayerIndex]?.SendInfoMessage($"Hint: {Level.Hint}")));
 
-			this.ExitButton = this.Add(new Button(51, 42, 4, 4, "x", null,
+			SpeedCheckbox = Add(new Checkbox(47, 43, 2, new CheckboxStyle()
+				{ Wall = 156, WallColor = PaintID2.Gray, CheckedColor = PaintID2.DeepOrange },
+				new Input<bool>(false, false, (self, value, player) => RunDelay = value ? 300 : 600)));
+
+			ExitButton = Add(new Button(51, 42, 4, 4, "x", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.DeepRed },
 				(self, t) => Stop()));
 
-			this.Playing = false;
-			this.RunLine = 0;
-			this.RunSlot = 0;
-			this.RunDelay = 1000;
+			Playing = false;
+			RunLine = 0;
+			RunSlot = 0;
+			RunDelay = 600;
 
-			this.Level = null;
-			this.OldSlot = this.Lines[0].Slot[0];
+			Level = null;
+			OldSlot = Lines[0].Slots[0];
 		}
 
 		public override void Invoke(Touch touch)
@@ -84,43 +95,59 @@ namespace CargoBot
 				((Panel)Parent).Unsummon();
 		}
 
-		public void Run()
+        public void Run()
 		{
 			lock (StaticLocker)
-				if (this.Playing)
-					this.Reset();
+				if (Playing)
+                {
+					Reset();
+					Field.LoadLevel(Level);
+					Apply().Draw();
+                }
 				else
 				{
-					this.Playing = true;
-					this.RunMove();
+					Playing = true;
+					PlayingIndex++;
+					RunMove();
 				}
 		}
 
 		public void Reset()
 		{
-			this.Playing = false;
-			this.RunLine = 0;
-			this.RunSlot = 0;
-			this.Field.LoadLevel(this.Level);
-			this.Field.Apply().Draw();
-			this.OldSlot.Style.WallColor = null;
-			this.OldSlot.Apply().Draw();
-			this.OldSlot = this.Lines[0].Slot[0];
+			Playing = false;
+			RunLine = 0;
+			RunSlot = 0;
+			OldSlot.Style.WallColor = null;
+			OldSlot = Lines[0].Slots[0];
 		}
 
 		public void GameOver()
 		{
-			this.Reset();
-			Console.WriteLine("GAME OVER");
+			Player.SendSuccessMessage("You lost...");
+			int playingIndex = PlayingIndex;
+			Task.Delay(3000).ContinueWith(_ =>
+			{
+				if (Playing && PlayingIndex == playingIndex)
+				{
+					Reset();
+					Field.LoadLevel(Level);
+					Apply().Draw();
+				}
+			});
 		}
 
 		public void Win()
 		{
-			Console.WriteLine("YOU WON!!!");
+			Player.SendSuccessMessage("You won the game!");
+			int playingIndex = PlayingIndex;
 			Task.Delay(3000).ContinueWith(_ =>
 			{
-				if (this.Playing)
-					this.Reset();
+				if (Playing && PlayingIndex == playingIndex)
+                {
+					Reset();
+					Field.LoadLevel(Level);
+					Apply().Draw();
+				}
 			});
 		}
 
@@ -128,33 +155,36 @@ namespace CargoBot
 		{
 			lock (StaticLocker)
 			{
-				if (this.Disposed || !this.Playing)
+				if (Disposed || !Playing)
 					return;
-				var value = this.PullAction();
-				this.RunAction(value);
-				if (value == 2 && this.Field.Crane.Box == null && this.Field.CheckWin())
+				var value = PullAction();
+				RunAction(value);
+				if (value == 2 && Field.Crane.Box == null && Field.CheckWin())
                 {
-					this.Win();
+					Win();
 					return;
                 }
-				else if (this.RunSlot + 1 == this.Lines[this.RunLine].Slot.Count) // Checking if there is no next slot
+				else if (RunSlot == Lines[RunLine].Slots.Count // Checking if there is no next slot
+					|| Lines[RunLine].Slots.Skip(RunSlot).All(slot => slot.Value == 0))
                 {
-					this.GameOver();
+					GameOver();
 					return;
                 }
-				if (this.Playing)
-					Task.Delay(this.RunDelay).ContinueWith(_ => this.RunMove());
+				if (Playing)
+					Task.Delay(RunDelay).ContinueWith(_ => RunMove());
 			}
 		}
 
 		public int? PullAction()
 		{
-			var slot = this.Lines[this.RunLine].Slot[this.RunSlot];
+			Slot slot = Lines[RunLine].Slots[RunSlot];
+			while (slot.Value == 0)
+				slot = Lines[RunLine].Slots[++RunSlot];
 
 			// Disabling old slot selection
-			this.OldSlot.Style.WallColor = null;
-			this.OldSlot.Apply().Draw();
-			this.OldSlot = slot;
+			OldSlot.Style.WallColor = null;
+			OldSlot.Apply().Draw();
+			OldSlot = slot;
 
 			// Enabling new slot selection
 			slot.Style.WallColor = PaintID2.White;
@@ -164,7 +194,7 @@ namespace CargoBot
 			bool condition_fit = true;
 			if (slot.Condition != null)
 			{
-				var box = this.Field.Crane.Box;
+				var box = Field.Crane.Box;
 				if ((slot.Condition < 4 && (box == null || box.Color != slot.Condition)
 						|| slot.Condition == 4 && box != null
 						|| slot.Condition == 5 && box == null))
@@ -172,12 +202,12 @@ namespace CargoBot
 			}
 
 			// Moving current slot
-			this.RunSlot += 1;
+			RunSlot += 1;
 			if (condition_fit)
 				if (slot.Value >= 4 && slot.Value < 8)
 				{
-					this.RunLine = slot.Value - 4;
-					this.RunSlot = 0;
+					RunLine = slot.Value - 4;
+					RunSlot = 0;
 				}
 
 			if (condition_fit)
@@ -185,45 +215,30 @@ namespace CargoBot
 			return null;
 		}
 
-		public string ActionName(int action)
-		{
-			if (action == 1)
-				return "MOVE RIGHT";
-			else if (action == 2)
-				return "MOVE DOWN";
-			else if (action == 3)
-				return "MOVE LEFT";
-			else if (action == 4)
-				return "GOTO F1";
-			else if (action == 5)
-				return "GOTO F2";
-			else if (action == 6)
-				return "GOTO F3";
-			else if (action == 7)
-				return "GOTO F4";
-			throw new Exception();
-		}
-
 		public void RunAction(int? action)
 		{
 			if (action.HasValue && action.Value > 0)
 			{
 				if (action == 1)
-					this.Field.Crane.MoveRight();
+					Field.Crane.MoveRight();
 				else if (action == 2)
 				{
-					this.Field.Crane.MoveDown();
-					Task.Delay(this.RunDelay / 2).ContinueWith(_ => this.Field.Crane.MoveUp());
+					Field.Crane.MoveDown();
+					Task.Delay(RunDelay / 2).ContinueWith(_ => Field.Crane.MoveUp());
 				}
 				else if (action == 3)
-					this.Field.Crane.MoveLeft();
+					Field.Crane.MoveLeft();
 			}
 		}
 
-		public void LoadLevel(CargoBotLevel level)
+		public void LoadLevel(CargoBotLevel level, TSPlayer player, int user)
 		{
-			this.Level = level;
-			this.Field.LoadLevel(level);
+			Player = player;
+			User = user;
+
+			Level = level;
+			Level.UDBRead(User);
+			Field.LoadLevel(level);
 
 			for (int i = 0; i < level.SlotLines.Count(); i++)
 			{
@@ -231,7 +246,7 @@ namespace CargoBot
 				for (int j = 0; j < line.Count(); j++)
 				{
 					var command = line.ElementAt(j);
-					var slot = this.Lines[i].Slot[j];
+					var slot = Lines[i].Slots[j];
 					slot.Value = command.ElementAt(0);
 					if (command.Count() > 1)
 						slot.Condition = command.ElementAt(1);
@@ -241,17 +256,15 @@ namespace CargoBot
 			for (int i = 0; i < level.Tools.Count(); i++)
 			{
 				var tool = level.Tools.ElementAt(i);
-				var slot = this.Toolbox[i % 4, i / 4];
+				var slot = Toolbox[i % 4, i / 4];
 				((Slot)slot).Value = tool;
 			}
 		}
 
 		public void Stop()
         {
-			Playing = false;
-			this.RunLine = 0;
-			this.RunSlot = 0;
-			this.OldSlot.Style.WallColor = null;
+			Level.UDBWrite(User);
+			Reset();
 			((Panel)Root).UnsummonAll();
 		}
 	}

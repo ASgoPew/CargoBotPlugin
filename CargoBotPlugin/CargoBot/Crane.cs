@@ -43,6 +43,9 @@ namespace CargoBot
             Box = null;
         }
 
+        public void GameOver() =>
+            CargoBotPlugin.CargoBot.GameOver();
+
         protected override (int, int) GetSizeNative() =>
             (4, Position + BoxSize + 2);
 
@@ -184,11 +187,6 @@ namespace CargoBot
                 tile.wallColor(Style.WallColor.Value);
             }
             Move(-(BoxSize + BoxDelay), 0, true);
-        }
-
-        public void GameOver()
-        {
-            ((CargoBotGame)Parent.Parent).GameOver();
         }
     }
 }
