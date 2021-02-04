@@ -122,7 +122,7 @@ namespace CargoBot
                 },
                 new List<int[]>
                 {
-                    new int[] { 3 },
+                    new int[] { },
                     new int[] { 4 }
                 },
                 new List<int[]> { },

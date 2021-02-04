@@ -75,6 +75,8 @@ namespace CargoBot
 
 			Level = null;
 			OldSlot = Lines[0].Slots[0];
+
+			Name = "CargoBot";
 		}
 
 		public override void Invoke(Touch touch)
@@ -95,21 +97,42 @@ namespace CargoBot
 				((Panel)Parent).Unsummon();
 		}
 
-        public void Run()
+        protected override void UDBReadNative(BinaryReader br, int user)
 		{
-			lock (StaticLocker)
-				if (Playing)
-                {
-					Reset();
-					Level.LoadField(this);
-					Apply().Draw();
-                }
-				else
-				{
-					Playing = true;
-					PlayingIndex++;
-					RunMove();
-				}
+			try
+            {
+				bool fast = br.ReadBoolean();
+				RunDelay = fast ? 300 : 600;
+				SpeedCheckbox.SetValue(fast, false, Player.Index);
+            }
+			catch
+            {
+				UDBWrite(user);
+            }
+		}
+
+		protected override void UDBWriteNative(BinaryWriter bw, int user)
+        {
+			bw.Write((bool)Fast);
+		}
+
+		public void LoadLevel(CargoBotLevel level, TSPlayer player, int user)
+		{
+			Player = player;
+			User = user;
+
+			Level = level;
+			UDBRead(user);
+			Level.UDBRead(User);
+			Level.LoadTools(this);
+		}
+
+		public void Stop()
+		{
+			UDBWrite(User);
+			Level.UDBWrite(User);
+			Reset();
+			((Panel)Root).UnsummonAll();
 		}
 
 		public void Reset()
@@ -149,6 +172,23 @@ namespace CargoBot
 					Apply().Draw();
 				}
 			});
+		}
+
+		public void Run()
+		{
+			lock (StaticLocker)
+				if (Playing)
+				{
+					Reset();
+					Level.LoadField(this);
+					Apply().Draw();
+				}
+				else
+				{
+					Playing = true;
+					PlayingIndex++;
+					RunMove();
+				}
 		}
 
 		public void RunMove()
@@ -229,23 +269,6 @@ namespace CargoBot
 				else if (action == 3)
 					Field.Crane.MoveLeft();
 			}
-		}
-
-		public void LoadLevel(CargoBotLevel level, TSPlayer player, int user)
-		{
-			Player = player;
-			User = user;
-
-			Level = level;
-			Level.UDBRead(User);
-			Level.LoadTools(this);
-		}
-
-		public void Stop()
-        {
-			Level.UDBWrite(User);
-			Reset();
-			((Panel)Root).UnsummonAll();
 		}
 	}
 }

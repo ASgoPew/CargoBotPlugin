@@ -43,10 +43,6 @@ namespace CargoBot
             CargoBotGame game = CargoBotPlugin.CargoBot;
             try
             {
-                //bool fast = br.ReadBoolean();
-                //game.RunDelay = fast ? 300 : 600;
-                //game.SpeedCheckbox.SetValue(fast, false, game.Player.Index);
-
                 foreach (var line in game.Lines)
                     foreach (var _slot in line.ChildrenFromBottom)
                         if (_slot is Slot slot)
@@ -79,7 +75,6 @@ namespace CargoBot
         protected override void UDBWriteNative(BinaryWriter bw, int user)
         {
             CargoBotGame game = CargoBotPlugin.CargoBot;
-            //bw.Write((bool)game.Fast);
 
             int count = game.Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot =>
                 ((Slot)slot).Value > 0 || ((Slot)slot).Condition.HasValue));
