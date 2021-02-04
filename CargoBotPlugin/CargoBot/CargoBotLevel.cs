@@ -11,21 +11,18 @@ namespace CargoBot
         public int CraneColumn;
         public IEnumerable<IEnumerable<int>> Columns;
         public IEnumerable<IEnumerable<int>> ResultColumns;
-        public IEnumerable<IEnumerable<IEnumerable<int>>> SlotLines;
         public IEnumerable<int> Tools;
         public (int, int, int) Stars;
         public string Hint;
 
         public CargoBotLevel(int index, int crane_column, IEnumerable<IEnumerable<int>> columns,
-            IEnumerable<IEnumerable<int>> result_columns, IEnumerable<IEnumerable<IEnumerable<int>>> slot_lines,
-            IEnumerable<int> tools, (int, int, int) stars, string hint)
+            IEnumerable<IEnumerable<int>> result_columns, IEnumerable<int> tools, (int, int, int) stars, string hint)
             : base(0, 0, 0, 0)
         {
             Index = index;
             CraneColumn = crane_column;
             Columns = columns;
             ResultColumns = result_columns;
-            SlotLines = slot_lines;
             Tools = tools;
             Stars = stars;
             Hint = hint;
@@ -64,7 +61,7 @@ namespace CargoBot
             }
             catch
             {
-                LoadSlots(game);
+                ClearSlots(game);
                 UDBWrite(user);
             }
         }
@@ -151,7 +148,7 @@ namespace CargoBot
             }
         }
 
-        public void LoadSlots(CargoBotGame game)
+        public void ClearSlots(CargoBotGame game)
         {
             foreach (SlotLine line in game.Lines)
                 foreach (Slot slot in line.ChildrenFromBottom.Skip(1))
@@ -159,22 +156,6 @@ namespace CargoBot
                     slot.Value = 0;
                     slot.Condition = null;
                 }
-
-            for (int i = 0; i < SlotLines.Count(); i++)
-            {
-                var line = SlotLines.ElementAt(i);
-                for (int j = 0; j < line.Count(); j++)
-                {
-                    var command = line.ElementAt(j);
-                    var slot = game.Lines[i].Slots[j];
-                    if (command.Count() > 0)
-                    {
-                        slot.Value = command.ElementAt(0);
-                        if (command.Count() > 1)
-                            slot.Condition = command.ElementAt(1);
-                    }
-                }
-            }
         }
     }
 }

@@ -60,23 +60,6 @@ namespace CargoBot
                 new int[] { },
                 new int[] { 3, 2, 3, 2, 1, 0 }
             },
-            new List<List<int[]>>
-            {
-                new List<int[]>
-                {
-                    new int[] { 1 },
-                    new int[] { 2 },
-                    new int[] { 1, 5 },
-                    new int[] { 5 }
-                },
-                new List<int[]>
-                {
-                    new int[] { 3 },
-                    new int[] { 4 }
-                },
-                new List<int[]> { },
-                new List<int[]> { }
-            },
             new int[] { 1, 2, 3, 0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 },
             (10, 10, 6),
             "kek hint");
@@ -105,23 +88,6 @@ namespace CargoBot
                 new int[] { 3 },
                 new int[] { },
                 new int[] { 3, 2, 3, 2, 1, 0 }
-            },
-            new List<List<int[]>>
-            {
-                new List<int[]>
-                {
-                    new int[] { 1 },
-                    new int[] { 2 },
-                    new int[] { 1, 5 },
-                    new int[] { 5 }
-                },
-                new List<int[]>
-                {
-                    new int[] { },
-                    new int[] { 4 }
-                },
-                new List<int[]> { },
-                new List<int[]> { }
             },
             new int[] { 1, 2, 3, 0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 },
             (10, 10, 6),

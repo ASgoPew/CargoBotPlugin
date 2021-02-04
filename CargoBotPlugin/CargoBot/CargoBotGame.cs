@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Terraria.ID;
@@ -14,6 +15,9 @@ namespace CargoBot
 		private static object StaticLocker = new object();
 		private static int SlowDelay = 600;
 		private static int FastDelay = 200;
+		private static int MaxRunningTime = 60000;
+		private static int SessionLength = 180000;
+		private static int ResultsDelay = 3000;
 
 		public Field Field;
 		public List<SlotLine> Lines;
@@ -33,9 +37,10 @@ namespace CargoBot
 		public TSPlayer Player;
 		public int User;
 		public bool Playing;
-		public int SessionLength;
 		public int SessionIndex = 0;
+		public DateTime BeginTime;
 		public bool WaitingForReset = false;
+		public bool ExitRequested = false;
 
 		public bool Fast => RunDelay == FastDelay;
 
@@ -75,7 +80,6 @@ namespace CargoBot
 			User = -1;
 			Level = null;
 			RunDelay = SlowDelay;
-			SessionLength = 180000;
 			Reset();
 
 			Name = "CargoBot";
@@ -111,6 +115,7 @@ namespace CargoBot
 			Playing = true;
 			SessionIndex++;
 			Level = level;
+			BeginTime = DateTime.UtcNow;
 			CargoBotPlugin.UserSaver.UDBRead(User);
 			Level.UDBRead(User);
 			Level.LoadStatic(this);
@@ -119,7 +124,13 @@ namespace CargoBot
 			Player.SendInfoMessage($"You session has begun. You have {SessionLength/60000} minutes.");
 
 			int sessionIndex = SessionIndex;
-			Task.Delay(SessionLength).ContinueWith(_ => EndSession(sessionIndex));
+			Task.Delay(SessionLength).ContinueWith(_ =>
+			{
+				if (Running)
+					ExitRequested = true;
+				else
+					EndSession(sessionIndex);
+			});
 		}
 
 		public void EndSession(int sessionIndex)
@@ -132,6 +143,7 @@ namespace CargoBot
 		public void Stop()
 		{
 			Playing = false;
+			ExitRequested = false;
 			Level.UDBWrite(User);
 			CargoBotPlugin.UserSaver.UDBWrite(User);
 			User = -1;
@@ -154,24 +166,34 @@ namespace CargoBot
 			OldSlot = Lines[0].Slots[0];
 		}
 
-		public void EndGame(bool win)
+		public void EndGame(bool? win)
 		{
 			Running = false;
 			WaitingForReset = true;
-			if (win)
-				Player.SendSuccessMessage("You won the game.");
+			if (win.HasValue)
+			{
+				if (win.Value)
+					Player.SendSuccessMessage("You won the game.");
+				else
+					Player.SendErrorMessage("You lost...");
+			}
 			else
-				Player.SendErrorMessage("You lost...");
+				Player.SendErrorMessage("Running for too long...");
 			int playingIndex = RunningIndex;
 			int sessionIndex = SessionIndex;
-			Task.Delay(3000).ContinueWith(_ =>
+			Task.Delay(ResultsDelay).ContinueWith(_ =>
 			{
-				if (Playing && WaitingForReset && SessionIndex == sessionIndex && RunningIndex == playingIndex)
+				if (Playing && SessionIndex == sessionIndex)
                 {
-					Reset();
-					Level.LoadField(this);
-					Apply().Draw();
-				}
+					if (ExitRequested)
+						Stop();
+					else if (WaitingForReset && RunningIndex == playingIndex)
+					{
+						Reset();
+						Level.LoadField(this);
+						Apply().Draw();
+					}
+                }
 			});
 		}
 
@@ -200,6 +222,11 @@ namespace CargoBot
 					return;
 				var value = PullAction();
 				RunAction(value);
+				if ((DateTime.UtcNow - BeginTime).TotalMilliseconds > MaxRunningTime)
+                {
+					EndGame(null);
+					return;
+                }
 				if (value == 2 && Field.Crane.Box == null && Field.CheckWin())
                 {
 					EndGame(true);
