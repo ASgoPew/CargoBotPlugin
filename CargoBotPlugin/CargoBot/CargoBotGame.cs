@@ -55,7 +55,7 @@ namespace CargoBot
 
 			this.ExitButton = this.Add(new Button(51, 42, 4, 4, "x", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.DeepRed },
-				(self, t) => ((Panel)Root).UnsummonAll()));
+				(self, t) => Stop()));
 
 			this.Playing = false;
 			this.RunLine = 0;
@@ -244,6 +244,15 @@ namespace CargoBot
 				var slot = this.Toolbox[i % 4, i / 4];
 				((Slot)slot).Value = tool;
 			}
+		}
+
+		public void Stop()
+        {
+			Playing = false;
+			this.RunLine = 0;
+			this.RunSlot = 0;
+			this.OldSlot.Style.WallColor = null;
+			((Panel)Root).UnsummonAll();
 		}
 	}
 }

@@ -10,3 +10,15 @@ C:\Users\ASgo\source\repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.cspr
 C:\Users\ASgo\source\repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.dll
 C:\Users\ASgo\source\repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.pdb
 C:\Users\ASgo\source\repos\CargoBotPlugin\CargoBotPlugin\bin\Debug\FakeProvider.dll
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\bin\Debug\CargoBot.dll
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\bin\Debug\CargoBot.pdb
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\bin\Debug\FakeProvider.dll
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\bin\Debug\OTAPI.dll
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\bin\Debug\TerrariaServer.exe
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\bin\Debug\TShockAPI.dll
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\bin\Debug\TUI.dll
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.csprojAssemblyReference.cache
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.csproj.CoreCompileInputs.cache
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.csproj.CopyComplete
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.dll
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.pdb
