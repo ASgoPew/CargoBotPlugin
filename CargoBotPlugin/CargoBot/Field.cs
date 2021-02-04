@@ -71,35 +71,6 @@ namespace CargoBot
 			}
 		}
 
-		public void LoadLevel(CargoBotLevel level)
-		{
-			Crane.Reset(level.CraneColumn);
-			foreach (var column in Columns)
-				column.Reset();
-			foreach (var column in ResultColumns)
-				column.Reset();
-
-			for (int i = 0; i < level.Columns.Count(); i++)
-			{
-				var column = level.Columns.ElementAt(i);
-				foreach (var box_color in column)
-				{
-					Columns[i].Push((byte)box_color);
-					Columns[i].Update();
-				}
-			}
-
-			for (int i = 0; i < level.ResultColumns.Count(); i++)
-			{
-				var column = level.ResultColumns.ElementAt(i);
-				foreach (var box_color in column)
-				{
-					ResultColumns[i].Push((byte)box_color);
-					ResultColumns[i].Update();
-				}
-			}
-		}
-
 		public bool CheckWin()
 		{
 			for (int i = 0; i < Columns.Count; i++)

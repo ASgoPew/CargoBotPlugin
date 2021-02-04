@@ -56,7 +56,6 @@ namespace CargoBot
                         }
 
                 int count = br.ReadByte();
-                game.Player.SendInfoMessage($"READ: NON EMPTY SLOTS: {count}");
                 for (int i = 0; i < count; i++)
                 {
                     int lineIndex = br.ReadByte();
@@ -70,10 +69,9 @@ namespace CargoBot
                         slot.Condition = null;
                 }
             }
-            catch (EndOfStreamException)
+            catch
             {
-                game.Player.SendErrorMessage("RESETTING DATABASE");
-                //game.LoadLevel(this, game.Player, user);
+                Load(game);
                 UDBWrite(user);
             }
         }
@@ -83,8 +81,8 @@ namespace CargoBot
             CargoBotGame game = CargoBotPlugin.CargoBot;
             //bw.Write((bool)game.Fast);
 
-            int count = game.Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot => ((Slot)slot).Value > 0));
-            game.Player.SendInfoMessage($"WRITE: NON EMPTY SLOTS: {count}");
+            int count = game.Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot =>
+                ((Slot)slot).Value > 0 || ((Slot)slot).Condition.HasValue));
             bw.Write((byte)count);
             for (int lineIndex = 0; lineIndex < game.Lines.Count; lineIndex++)
             {
@@ -103,9 +101,28 @@ namespace CargoBot
             }
         }
 
-        public void Load()
+        public void Load(CargoBotGame game)
         {
-            CargoBotGame game = CargoBotPlugin.CargoBot;
+            LoadField(game);
+            LoadTools(game);
+
+            // Slots
+            for (int i = 0; i < SlotLines.Count(); i++)
+            {
+                var line = SlotLines.ElementAt(i);
+                for (int j = 0; j < line.Count(); j++)
+                {
+                    var command = line.ElementAt(j);
+                    var slot = game.Lines[i].Slots[j];
+                    slot.Value = command.ElementAt(0);
+                    if (command.Count() > 1)
+                        slot.Condition = command.ElementAt(1);
+                }
+            }
+        }
+
+        public void LoadField(CargoBotGame game)
+        {
             Field field = game.Field;
 
             // Crane
@@ -136,22 +153,10 @@ namespace CargoBot
                     field.ResultColumns[i].Update();
                 }
             }
+        }
 
-            // Slots
-            for (int i = 0; i < SlotLines.Count(); i++)
-            {
-                var line = SlotLines.ElementAt(i);
-                for (int j = 0; j < line.Count(); j++)
-                {
-                    var command = line.ElementAt(j);
-                    var slot = game.Lines[i].Slots[j];
-                    slot.Value = command.ElementAt(0);
-                    if (command.Count() > 1)
-                        slot.Condition = command.ElementAt(1);
-                }
-            }
-
-            // Tools
+        public void LoadTools(CargoBotGame game)
+        {
             for (int i = 0; i < Tools.Count(); i++)
             {
                 var tool = Tools.ElementAt(i);

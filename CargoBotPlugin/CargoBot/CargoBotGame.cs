@@ -101,7 +101,7 @@ namespace CargoBot
 				if (Playing)
                 {
 					Reset();
-					Field.LoadLevel(Level);
+					Level.LoadField(this);
 					Apply().Draw();
                 }
 				else
@@ -130,7 +130,7 @@ namespace CargoBot
 				if (Playing && PlayingIndex == playingIndex)
 				{
 					Reset();
-					Field.LoadLevel(Level);
+					Level.LoadField(this);
 					Apply().Draw();
 				}
 			});
@@ -145,7 +145,7 @@ namespace CargoBot
 				if (Playing && PlayingIndex == playingIndex)
                 {
 					Reset();
-					Field.LoadLevel(Level);
+					Level.LoadField(this);
 					Apply().Draw();
 				}
 			});
@@ -238,27 +238,7 @@ namespace CargoBot
 
 			Level = level;
 			Level.UDBRead(User);
-			Field.LoadLevel(level);
-
-			for (int i = 0; i < level.SlotLines.Count(); i++)
-			{
-				var line = level.SlotLines.ElementAt(i);
-				for (int j = 0; j < line.Count(); j++)
-				{
-					var command = line.ElementAt(j);
-					var slot = Lines[i].Slots[j];
-					slot.Value = command.ElementAt(0);
-					if (command.Count() > 1)
-						slot.Condition = command.ElementAt(1);
-				}
-			}
-
-			for (int i = 0; i < level.Tools.Count(); i++)
-			{
-				var tool = level.Tools.ElementAt(i);
-				var slot = Toolbox[i % 4, i / 4];
-				((Slot)slot).Value = tool;
-			}
+			Level.LoadTools(this);
 		}
 
 		public void Stop()
