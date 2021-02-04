@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Terraria.ID;
 using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
+using TerrariaUI.Widgets;
 using TerrariaUI.Widgets.Media;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -16,8 +17,15 @@ namespace CargoBot
     {
         public static ushort[] Walls = { WallID.RubyGemspark, WallID.AmethystGemspark };
         public static byte[] ConditionColors = { PaintID2.DeepRed, PaintID2.DeepBlue, PaintID2.DeepLime, PaintID2.DeepYellow, PaintID2.Gray };
-        public static ITile[,] Image = null;
 		private static object StaticLocker = new object();
+		private static int FrameF = Label.StatueTextFrame('f');
+		private static int[] FrameN = new int[]
+        {
+			Label.StatueTextFrame('1'),
+			Label.StatueTextFrame('2'),
+			Label.StatueTextFrame('3'),
+			Label.StatueTextFrame('4')
+		};
 
 		public int Value;
 		public int? Condition;
@@ -43,13 +51,6 @@ namespace CargoBot
 			DrawWithSection = true;
 		}
 
-		protected override void LoadThisNative()
-        {
-			lock (StaticLocker)
-				if (Image == null)
-                    Image = ImageData.LoadImage(CargoBotPlugin.ImagePath).Tiles;
-        }
-
 		protected override void UpdateThisNative()
 		{
 			base.UpdateThisNative();
@@ -61,14 +62,7 @@ namespace CargoBot
 
 		protected override void ApplyThisNative()
 		{
-			var image = Image;
-			var y_range = WithCondition ? Height - 1 : Height;
-			var dy = WithCondition ? 1 : 0;
-			var image_dx = 4 * Value;
-			var image_dy = Index == 0 ? 0 : 4;
-			for (int x = 0; x < Width; x++)
-				for (int y = 0; y < y_range; y++)
-					Tile(x, y + dy).CopyFrom(image[x + image_dx, y + image_dy]);
+			ApplyValue();
 
 			base.ApplyThisNative();
 
@@ -76,27 +70,77 @@ namespace CargoBot
 				ApplyCondition();
 		}
 
+		public void ApplyValue()
+        {
+			var y_range = WithCondition ? Height - 1 : Height;
+			var dy = WithCondition ? 1 : 0;
+
+			for (int x = 0; x < Width; x++)
+				for (int y = 0; y < y_range; y++)
+				{
+					var tile = Tile(x, y + dy);
+					if (tile == null)
+						continue;
+					tile.wall = Walls[Index];
+					tile.wallColor((byte)PaintID2.Gray);
+					if ((Value == 1 && (y == 1 || y == 2 || x == 2))
+							|| (Value == 2 && (x == 1 || x == 2 || y == 2))
+							|| (Value == 3 && (y == 1 || y == 2 || x == 1)))
+					{
+						tile.active(true);
+						tile.inActive(true);
+						tile.type = TileID.DiamondGemspark;
+						if (Value == 1 && (x == 2 && y == 0 || x == 3 && y == 1))
+							tile.slope((byte)1);
+						else if (Value == 3 && (x == 1 && y == 0 || x == 0 && y == 1))
+							tile.slope((byte)2);
+						else if ((Value == 1 || Value == 2) && (x == 3 && y == 2 || x == 2 && y == 3))
+							tile.slope((byte)3);
+						else if ((Value == 2 || Value == 3) && (x == 0 && y == 2 || x == 1 && y == 3))
+							tile.slope((byte)4);
+					}
+					else if (Value >= 4 && Value < 8 && y > 0 && y < 3)
+					{
+						tile.active(true);
+						tile.inActive(true);
+						tile.type = (ushort)TileID.AlphabetStatues;
+						tile.color((byte)PaintID2.Gray);
+						tile.frameX = (short)(x < 2
+							? (FrameF + x * 18)
+							: (FrameN[Value - 4] + (x - 2) * 18));
+						tile.frameY = (short)((y - 1) * 18);
+					}
+					else if (Value >= 8 && Value < 12 && y > 0 && y < 3)
+						tile.wallColor((byte)ConditionColors[Value - 8]);
+					else if (Value == 12 && y > 0 && y < 3)
+						tile.wallColor((byte)PaintID2.Black);
+					else if (Value == 13 && y > 0 && y < 3)
+						tile.wallColor((byte)ConditionColors[x]);
+				}
+		}
+
 		public void ApplyCondition()
 		{
 			for (int x = 0; x < Width; x++)
 			{
 				var tile = Tile(x, 0);
-				if (tile != null)
-					if (Condition.HasValue)
-					{
-						tile.wall = Walls[1 - Index];
-						if (Condition.Value < 5)
-							tile.wallColor(ConditionColors[Condition.Value]);
-						else if (Condition.Value == 5)
-							tile.wallColor(ConditionColors[x]);
-					}
-					else
-					{
-						if (ParentWall.HasValue)
-							tile.wall = ParentWall.Value;
-						if (ParentWallColor.HasValue)
-							tile.wallColor(ParentWallColor.Value);
-					}
+				if (tile == null)
+					continue;
+				if (Condition.HasValue)
+				{
+					tile.wall = (ushort)Walls[1 - Index];
+					if (Condition.Value < 5)
+						tile.wallColor((byte)ConditionColors[Condition.Value]);
+					else if (Condition.Value == 5)
+						tile.wallColor((byte)ConditionColors[x]);
+				}
+				else
+				{
+					if (ParentWall.HasValue)
+						tile.wall = (ushort)ParentWall.Value;
+					if (ParentWallColor.HasValue)
+						tile.wallColor((byte)ParentWallColor.Value);
+				}
 			}
 		}
 

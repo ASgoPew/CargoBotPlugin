@@ -57,39 +57,44 @@ namespace CargoBot
             for (int i = 0; i < Position + 2; i++)
                 for (int j = 1; j < 1 + BoxSize; j++)
                 {
-                    var t = Tile(j, i);
-                    t.active(true);
-                    t.type = TileType;
+                    var tile = Tile(j, i);
+                    if (tile == null)
+                        continue;
+                    tile.active(true);
+                    tile.type = TileType;
                 }
 
             // Crane claw
             for (int i = Position + 1; i < Position + BoxSize + 2; i++)
             {
-                var t = Tile(0, i);
-                t.active(true);
-                t.type = TileType;
-                t = Tile(Width - 1, i);
-                t.active(true);
-                t.type = TileType;
+                var tile = Tile(0, i);
+                if (tile != null)
+                {
+                    tile.active(true);
+                    tile.type = TileType;
+                }
+                tile = Tile(Width - 1, i);
+                if (tile != null)
+                {
+                    tile.active(true);
+                    tile.type = TileType;
+                }
             }
-            Tile(0, Position + 1).slope(2);
-            Tile(Width - 1, Position + 1).slope(1);
-            Tile(0, Position + BoxSize + 1).slope(4);
-            Tile(Width - 1, Position + BoxSize + 1).slope(3);
+            Tile(0, Position + 1)?.slope(2);
+            Tile(Width - 1, Position + 1)?.slope(1);
+            Tile(0, Position + BoxSize + 1)?.slope(4);
+            Tile(Width - 1, Position + BoxSize + 1)?.slope(3);
 
             // Crane box
             for (int x = 0; x < BoxSize; x++)
                 for (int y = 0; y < BoxSize; y++)
-                    Tile(1 + x, 2 + Position + y).active(false);
+                    Tile(1 + x, 2 + Position + y)?.active(false);
 
             // Clearing space after move_up
             if (Height > Position + BoxSize + 2)
                 for (int y = Position + BoxSize + 2; y < GetMaxPosition(); y++)
                     for (int x = 0; x < Width; x++)
-                    {
-                        var t = Tile(x, y);
-                        t.active(false);
-                    }
+                        Tile(x, y)?.active(false);
         }
 
         public Column GetColumn() =>
@@ -164,6 +169,8 @@ namespace CargoBot
 		    foreach (var point in Points)
             {
                 var tile = Tile(point.Item1, point.Item2);
+                if (tile == null)
+                    continue;
                 tile.active(false);
                 tile.wall = Style.Wall.Value;
                 tile.wallColor(Style.WallColor.Value);
@@ -182,6 +189,8 @@ namespace CargoBot
             foreach (var point in Points)
             {
                 var tile = Tile(point.Item1, point.Item2);
+                if (tile == null)
+                    continue;
                 tile.active(false);
                 tile.wall = Style.Wall.Value;
                 tile.wallColor(Style.WallColor.Value);

@@ -64,6 +64,8 @@ namespace CargoBot
 			foreach (var point in Border)
 			{
 				var tile = Tile(point.Item1, point.Item2);
+				if (tile == null)
+					continue;
 				tile.active(true);
 				tile.type = TileType;
 				tile.color(TileColor);

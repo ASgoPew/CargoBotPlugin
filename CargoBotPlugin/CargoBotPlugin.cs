@@ -29,9 +29,7 @@ namespace CargoBot
         public override string Author => "ASgo & Anzhelika";
         public override string Description => "CargoBot TUI game";
 
-        //public static CargoBotGame CargoBot { get; private set; }
         public static Dictionary<int, CargoBotGame> Games = new Dictionary<int, CargoBotGame>();
-        public const string ImagePath = "worldedit\\schematic-cargobot.dat";
         public const int MaxInstances = 255;
         private static PanelsSaver PanelsSaver;
         internal static UserSaver UserSaver = new UserSaver();
