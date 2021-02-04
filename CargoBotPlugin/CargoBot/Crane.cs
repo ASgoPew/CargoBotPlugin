@@ -130,10 +130,13 @@ namespace CargoBot
                 GetColumn().Update();
                 Box = null;
             }
-            Update().Apply();
-            if (removed_box != null)
-                removed_box.Apply();
-            Draw();
+            if (!GetAncestor<CargoBotGame>().Fast)
+            {
+                Update().Apply();
+                if (removed_box != null)
+                    removed_box.Apply();
+                Draw();
+            }
         }
 
         public void MoveUp()
@@ -141,14 +144,12 @@ namespace CargoBot
             Position = 0;
             Apply();
             int old_height = Height;
-
             Parent.UpdateChildSize();
             if (Box != null)
             {
                 Update();
                 Box.Apply();
             }
-
             GetColumn().Apply();
             Draw(height: old_height);
         }

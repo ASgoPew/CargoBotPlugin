@@ -12,6 +12,8 @@ namespace CargoBot
     public class CargoBotGame : VisualContainer
 	{
 		private static object StaticLocker = new object();
+		private static int SlowDelay = 600;
+		private static int FastDelay = 200;
 
 		public Field Field;
 		public List<SlotLine> Lines;
@@ -35,7 +37,7 @@ namespace CargoBot
 		public int SessionIndex = 0;
 		public bool WaitingForReset = false;
 
-		public bool Fast => RunDelay == 300;
+		public bool Fast => RunDelay == FastDelay;
 
 		public CargoBotGame(int x, int y)
 			: base(x, y, 56, 47, new UIConfiguration() { UseEnd = true, BeginRequire = false },
@@ -63,7 +65,7 @@ namespace CargoBot
 
 			SpeedCheckbox = Add(new Checkbox(47, 43, 2, new CheckboxStyle()
 				{ Wall = 156, WallColor = PaintID2.Gray, CheckedColor = PaintID2.DeepOrange },
-				new Input<bool>(false, false, (self, value, player) => RunDelay = value ? 300 : 600)));
+				new Input<bool>(false, false, (self, value, player) => RunDelay = value ? FastDelay : SlowDelay)));
 
 			ExitButton = Add(new Button(51, 42, 4, 4, "x", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.DeepRed },
@@ -72,7 +74,7 @@ namespace CargoBot
 			Playing = false;
 			User = -1;
 			Level = null;
-			RunDelay = 600;
+			RunDelay = SlowDelay;
 			SessionLength = 180000;
 			Reset();
 
