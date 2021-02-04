@@ -24,8 +24,8 @@ namespace CargoBot
 		public Button HintButton;
 		public Checkbox SpeedCheckbox;
 		public Button ExitButton;
-		public bool Playing;
-		public int PlayingIndex = 0;
+		public bool Running;
+		public int RunningIndex = 0;
 		public int RunLine;
 		public int RunSlot;
 		public int RunDelay;
@@ -33,6 +33,9 @@ namespace CargoBot
 		public Slot OldSlot;
 		public TSPlayer Player;
 		public int User;
+		public bool Playing;
+		public int SessionLength;
+		public int SessionIndex = 0;
 
 		public bool Fast => RunDelay == 300;
 
@@ -68,13 +71,13 @@ namespace CargoBot
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.DeepRed },
 				(self, t) => Stop()));
 
-			Playing = false;
+			Running = false;
 			RunLine = 0;
 			RunSlot = 0;
 			RunDelay = 600;
-
 			Level = null;
 			OldSlot = Lines[0].Slots[0];
+			SessionLength = 180000;
 
 			Name = "CargoBot";
 		}
@@ -93,8 +96,6 @@ namespace CargoBot
 					begin_slot.Apply().Draw();
 				}
 			}
-			else
-				((Panel)Parent).Unsummon();
 		}
 
         protected override void UDBReadNative(BinaryReader br, int user)
@@ -116,19 +117,43 @@ namespace CargoBot
 			bw.Write((bool)Fast);
 		}
 
-		public void LoadLevel(CargoBotLevel level, TSPlayer player, int user)
+        protected override bool CanTouchNative(Touch touch)
+        {
+            return base.CanTouchNative(touch) && touch.PlayerIndex == Player.Index
+				|| TShock.Players[touch.PlayerIndex].HasPermission("TUI.control");
+        }
+
+        public void Start(CargoBotLevel level, TSPlayer player, int user)
 		{
 			Player = player;
 			User = user;
 
+			Playing = true;
+			SessionIndex++;
 			Level = level;
 			UDBRead(user);
 			Level.UDBRead(User);
 			Level.LoadTools(this);
+
+			((Panel)Parent).Summon(this);
+			Player.SendInfoMessage($"You session has begun! You have {SessionLength/60000} minutes.");
+
+			int sessionIndex = SessionIndex;
+			Task.Delay(SessionLength).ContinueWith(_ => EndSession(sessionIndex));
 		}
+
+		public void EndSession(int sessionIndex)
+        {
+			if (sessionIndex != SessionIndex || !Playing)
+				return;
+			if (Player.Active)
+				Player.SendInfoMessage("Your session has ended!");
+			Stop();
+        }
 
 		public void Stop()
 		{
+			Playing = false;
 			UDBWrite(User);
 			Level.UDBWrite(User);
 			Reset();
@@ -137,7 +162,7 @@ namespace CargoBot
 
 		public void Reset()
 		{
-			Playing = false;
+			Running = false;
 			RunLine = 0;
 			RunSlot = 0;
 			OldSlot.Style.WallColor = null;
@@ -147,10 +172,11 @@ namespace CargoBot
 		public void GameOver()
 		{
 			Player.SendSuccessMessage("You lost...");
-			int playingIndex = PlayingIndex;
+			int playingIndex = RunningIndex;
+			int sessionIndex = SessionIndex;
 			Task.Delay(3000).ContinueWith(_ =>
 			{
-				if (Playing && PlayingIndex == playingIndex)
+				if (Playing && SessionIndex == sessionIndex && Running && RunningIndex == playingIndex)
 				{
 					Reset();
 					Level.LoadField(this);
@@ -162,10 +188,11 @@ namespace CargoBot
 		public void Win()
 		{
 			Player.SendSuccessMessage("You won the game!");
-			int playingIndex = PlayingIndex;
+			int playingIndex = RunningIndex;
+			int sessionIndex = SessionIndex;
 			Task.Delay(3000).ContinueWith(_ =>
 			{
-				if (Playing && PlayingIndex == playingIndex)
+				if (Playing && SessionIndex == sessionIndex && Running && RunningIndex == playingIndex)
                 {
 					Reset();
 					Level.LoadField(this);
@@ -177,7 +204,7 @@ namespace CargoBot
 		public void Run()
 		{
 			lock (StaticLocker)
-				if (Playing)
+				if (Running)
 				{
 					Reset();
 					Level.LoadField(this);
@@ -185,8 +212,8 @@ namespace CargoBot
 				}
 				else
 				{
-					Playing = true;
-					PlayingIndex++;
+					Running = true;
+					RunningIndex++;
 					RunMove();
 				}
 		}
@@ -195,7 +222,7 @@ namespace CargoBot
 		{
 			lock (StaticLocker)
 			{
-				if (Disposed || !Playing)
+				if (Disposed || !Running)
 					return;
 				var value = PullAction();
 				RunAction(value);
@@ -210,7 +237,7 @@ namespace CargoBot
 					GameOver();
 					return;
                 }
-				if (Playing)
+				if (Running)
 					Task.Delay(RunDelay).ContinueWith(_ => RunMove());
 			}
 		}

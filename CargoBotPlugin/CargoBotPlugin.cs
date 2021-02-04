@@ -17,6 +17,7 @@ using TerrariaUI.Widgets.Data;
 using TerrariaUI.Widgets.Media;
 using TShockAPI;
 using TShockAPI.DB;
+using TShockAPI.Hooks;
 
 namespace CargoBot
 {
@@ -238,10 +239,7 @@ namespace CargoBot
                         else if (!(player.Account is UserAccount account))
                             player.SendErrorMessage("You have to be logged in to play this game!");
                         else
-                        {
-                            CargoBot.LoadLevel(Levels[pack][value], player, account.ID);
-                            cargopanel.Summon(CargoBot);
-                        }
+                            CargoBot.Start(Levels[pack][value], player, account.ID);
                     }))
                 ).Disable(false) as Menu;
 
@@ -253,6 +251,21 @@ namespace CargoBot
                 else
                     cargopanel.Summon(menus[value]);
             };
+
+            ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
+            PlayerHooks.PlayerLogout += OnPlayerLogout;
+        }
+
+        private void OnServerLeave(LeaveEventArgs args)
+        {
+            if (CargoBot.Playing && CargoBot.Player.Index == args.Who)
+                CargoBot.Stop();
+        }
+
+        private void OnPlayerLogout(PlayerLogoutEventArgs args)
+        {
+            if (CargoBot.Playing && CargoBot.Player.Index == args.Player.Index)
+                CargoBot.Stop();
         }
 
         protected override void Dispose(bool disposing)
