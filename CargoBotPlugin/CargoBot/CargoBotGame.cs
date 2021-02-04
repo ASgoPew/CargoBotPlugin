@@ -98,25 +98,6 @@ namespace CargoBot
 			}
 		}
 
-        protected override void UDBReadNative(BinaryReader br, int user)
-		{
-			try
-            {
-				bool fast = br.ReadBoolean();
-				RunDelay = fast ? 300 : 600;
-				SpeedCheckbox.SetValue(fast, false, Player.Index);
-            }
-			catch
-            {
-				UDBWrite(user);
-            }
-		}
-
-		protected override void UDBWriteNative(BinaryWriter bw, int user)
-        {
-			bw.Write((bool)Fast);
-		}
-
         protected override bool CanTouchNative(Touch touch)
         {
             return base.CanTouchNative(touch) && touch.PlayerIndex == Player.Index
@@ -131,7 +112,7 @@ namespace CargoBot
 			Playing = true;
 			SessionIndex++;
 			Level = level;
-			UDBRead(user);
+			CargoBotPlugin.UserSaver.UDBRead(User);
 			Level.UDBRead(User);
 			Level.LoadStatic(this);
 
@@ -153,7 +134,7 @@ namespace CargoBot
 		{
 			Playing = false;
 			Level.UDBWrite(User);
-			UDBWrite(User);
+			CargoBotPlugin.UserSaver.UDBWrite(User);
 			User = -1;
 			Level = null;
 			Reset();

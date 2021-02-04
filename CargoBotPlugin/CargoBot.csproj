@@ -66,6 +66,8 @@
     <Compile Include="CargoBot\Slot.cs" />
     <Compile Include="CargoBot\SlotLine.cs" />
     <Compile Include="CargoBot\ToolBox.cs" />
+    <Compile Include="CargoBot\UserSaver.cs" />
+    <Compile Include="PanelsSaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
