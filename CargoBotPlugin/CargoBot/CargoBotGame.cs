@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Terraria.ID;
 using TerrariaUI.Base;
@@ -12,7 +9,7 @@ using TShockAPI;
 
 namespace CargoBot
 {
-	public class CargoBotGame : VisualContainer
+    public class CargoBotGame : VisualContainer
 	{
 		private static object StaticLocker = new object();
 

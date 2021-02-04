@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
 
 namespace CargoBot
 {
-	public class Field : VisualObject
+    public class Field : VisualObject
 	{
 		public int Divider;
 		public ushort TileType;

@@ -1,15 +1,7 @@
-﻿using OTAPI.Tile;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria.ID;
+﻿using Terraria.ID;
 using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
 using TerrariaUI.Widgets;
-using TerrariaUI.Widgets.Media;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CargoBot
 {
