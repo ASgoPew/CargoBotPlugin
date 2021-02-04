@@ -5,10 +5,10 @@ namespace CargoBot
 {
     public class PanelsSaver : VisualObject
     {
-        public PanelsSaver(string name)
+        public PanelsSaver()
             : base(0, 0, 0, 0)
         {
-            Name = name;
+            Name = "CargobotPanelsSaver";
         }
 
         protected override void DBReadNative(BinaryReader br)

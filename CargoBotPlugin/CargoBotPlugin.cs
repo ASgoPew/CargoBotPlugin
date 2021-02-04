@@ -138,62 +138,62 @@ namespace CargoBot
                     {
                         { "Cargo 101", level_1},
                         { "Transporter", level_2},
-                        { "Re-Curses", level_1},
-                        { "Inverter", level_1},
-                        { "From Beneath", level_1},
-                        { "Go Left", level_1}
+                        /*{ "Re-Curses", level_3},
+                        { "Inverter", level_4},
+                        { "From Beneath", level_5},
+                        { "Go Left", level_6}*/
                     }
                 },
-                { "Easy", new Dictionary<string, CargoBotLevel>()
+                /*{ "Easy", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Double Flip", level_1},
-                        { "Go Left 2", level_1},
-                        { "Shuffle Sort", level_1},
-                        { "Go the Distance", level_1},
-                        { "Color Sort", level_1},
-                        { "Walking Piles", level_1}
+                        { "Double Flip", level_6},
+                        { "Go Left 2", level_7},
+                        { "Shuffle Sort", level_8},
+                        { "Go the Distance", level_9},
+                        { "Color Sort", level_10},
+                        { "Walking Piles", level_11}
                     }
                 },
                 { "Medium", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Repeat Inverter", level_1},
-                        { "Double Sort", level_1},
-                        { "Mirror", level_1},
-                        { "Lay it out", level_1},
-                        { "The Stacker", level_1},
-                        { "Clarity", level_1}
+                        { "Repeat Inverter", level_12},
+                        { "Double Sort", level_13},
+                        { "Mirror", level_14},
+                        { "Lay it out", level_15},
+                        { "The Stacker", level_16},
+                        { "Clarity", level_17}
                     }
                 },
                 { "Hard", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Come Together", level_1},
-                        { "Come Together 2", level_1},
-                        { "Up The Greens", level_1},
-                        { "Fill The Blanks", level_1},
-                        { "Count The Blues", level_1},
-                        { "Multi Sort", level_1}
+                        { "Come Together", level_18},
+                        { "Come Together 2", level_19},
+                        { "Up The Greens", level_20},
+                        { "Fill The Blanks", level_21},
+                        { "Count The Blues", level_22},
+                        { "Multi Sort", level_23}
                     }
                 },
                 { "Crazy", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Divide by two", level_1},
-                        { "The Merger", level_1},
-                        { "Even the Odds", level_1},
-                        { "Genetic Code", level_1},
-                        { "Multi Sort 2", level_1},
-                        { "The Swap", level_1}
+                        { "Divide by two", level_24},
+                        { "The Merger", level_25},
+                        { "Even the Odds", level_26},
+                        { "Genetic Code", level_27},
+                        { "Multi Sort 2", level_28},
+                        { "The Swap", level_29}
                     }
                 },
                 { "Impossible", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Restoring Order", level_1},
-                        { "Changing  Places", level_1},
-                        { "Palette Swap", level_1},
-                        { "Mirror 2", level_1},
-                        { "Changing Places 2", level_1},
-                        { "Vertical Sort", level_1}
+                        { "Restoring Order", level_30},
+                        { "Changing  Places", level_31},
+                        { "Palette Swap", level_32},
+                        { "Mirror 2", level_33},
+                        { "Changing Places 2", level_34},
+                        { "Vertical Sort", level_35}
                     }
-                },
+                }*/
             };
 
         private static Command[] ChatCommands = new Command[]
@@ -208,7 +208,7 @@ namespace CargoBot
 
             Commands.ChatCommands.AddRange(ChatCommands);
 
-            PanelsSaver = new PanelsSaver("CargobotPanelsSaver");
+            PanelsSaver = new PanelsSaver();
             PanelsSaver.DBRead();
         }
 

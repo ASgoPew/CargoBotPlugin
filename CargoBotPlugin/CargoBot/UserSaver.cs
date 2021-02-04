@@ -17,10 +17,11 @@ namespace CargoBot
             try
             {
                 CargoBotGame game = CargoBotPlugin.GameByUser(user);
+                if (game == null)
+                    return;
                 bool fast = br.ReadBoolean();
                 game.RunDelay = fast ? 300 : 600;
                 game.SpeedCheckbox.SetValue(fast, false, game.Player.Index);
-                Console.WriteLine($"FAST? {fast}");
             }
             catch
             {
@@ -31,8 +32,9 @@ namespace CargoBot
         protected override void UDBWriteNative(BinaryWriter bw, int user)
         {
             CargoBotGame game = CargoBotPlugin.GameByUser(user);
+            if (game == null)
+                return;
             bw.Write((bool)game.Fast);
-            Console.WriteLine($"SAVE FAST {game.Fast}");
         }
     }
 }
