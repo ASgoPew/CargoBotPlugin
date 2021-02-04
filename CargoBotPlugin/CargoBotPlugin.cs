@@ -25,14 +25,13 @@ namespace CargoBot
     public class CargoBotPlugin : TerrariaPlugin
     {
         public override string Name => "CargoBot";
-
         public override Version Version => Assembly.GetExecutingAssembly().GetName().Version;
-
         public override string Author => "ASgo & Anzhelika";
-
         public override string Description => "CargoBot TUI game";
 
-        public static CargoBotGame CargoBot { get; private set; }
+        //public static CargoBotGame CargoBot { get; private set; }
+        internal static List<CargoBotGame> Games = new List<CargoBotGame>();
+        private static int PanelIndex = 0;
 
         public CargoBotPlugin(Main game)
             : base(game)
@@ -202,15 +201,85 @@ namespace CargoBot
                 },
             };
 
+        private static Command[] ChatCommands = new Command[]
+        {
+            new Command("TUI.control", CargoBotCommand, "cargobot", "cargo")
+        };
+
         public override void Initialize()
         {
-            int x = 200;
-            int y = 130;
+            ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
+            PlayerHooks.PlayerLogout += OnPlayerLogout;
+
+            Commands.ChatCommands.AddRange(ChatCommands);
+        }
+
+        private void OnServerLeave(LeaveEventArgs args)
+        {
+            foreach (CargoBotGame game in Games)
+                if (game.Playing && game.Player.Index == args.Who)
+                    game.Stop();
+        }
+
+        private void OnPlayerLogout(PlayerLogoutEventArgs args)
+        {
+            foreach (CargoBotGame game in Games)
+                if (game.Playing && game.Player.Index == args.Player.Index)
+                    game.Stop();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                ServerApi.Hooks.ServerLeave.Deregister(this, OnServerLeave);
+                PlayerHooks.PlayerLogout -= OnPlayerLogout;
+
+                foreach (var cmd in ChatCommands)
+                    Commands.ChatCommands.Remove(cmd);
+
+                foreach (var game in Games)
+                    TUI.Destroy(game.Root);
+                Games.Clear();
+            }
+            base.Dispose(disposing);
+        }
+
+        private static void CargoBotCommand(CommandArgs args)
+        {
+            switch (args.Parameters.FirstOrDefault()?.ToLower())
+            {
+                case "add":
+                    StartGame(args);
+                    break;
+                case "remove":
+                    if (Games.Count == 0)
+                        args.Player.SendErrorMessage("There are no games.");
+                    else
+                    {
+                        CargoBotGame game = Games.Last();
+                        TUI.Destroy(game.Root);
+                        Games.Remove(game);
+                        args.Player.SendSuccessMessage("Removed last game instance.");
+                    }
+                    break;
+                default:
+                    args.Player.SendErrorMessage("Usage: /cargobot <add/remove>");
+                    break;
+            }
+        }
+
+        private static void StartGame(CommandArgs args)
+        {
+            int x = args.Player.TileX;
+            int y = args.Player.TileY;
             int w = 20;
             int h = 4;
+            string name = $"Cargobot{PanelIndex++}";
 
-            Panel cargopanel = TUI.Create(new Panel("Cargobot", x, y, w, h,
-                provider: FakeProviderAPI.CreateTileProvider("Cargobot", x, y, w, h)));
+            Panel cargopanel = new Panel(name, x, y, w, h,
+                style: new PanelStyle() { SaveSize = false },
+                provider: FakeProviderAPI.CreateTileProvider(name, x, y, w, h));
             Button summon_button = cargopanel.Add(new Button(0, 0, w, h, "cargobot", null,
                 new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.None, Wall = 155 }));
 
@@ -221,8 +290,8 @@ namespace CargoBot
                 new Input<string>(null, null))
             ).Disable(false) as Menu;
 
-            CargoBot = cargopanel.Add(new CargoBotGame(0, 0));
-            CargoBot.Disable(false);
+            CargoBotGame cargoBot = cargopanel.Add(new CargoBotGame(0, 0));
+            cargoBot.Disable(false);
 
             Dictionary<string, Menu> menus = new Dictionary<string, Menu>();
             foreach (string pack in Levels.Keys)
@@ -236,10 +305,12 @@ namespace CargoBot
                         TSPlayer player = TShock.Players[playerIndex];
                         if (value == "back")
                             cargopanel.Unsummon();
-                        else if (!(player.Account is UserAccount account))
-                            player.SendErrorMessage("You have to be logged in to play this game!");
+                        else if (!(player.Account is UserAccount account2))
+                            player.SendErrorMessage("You have to be logged in to play this game.");
+                        else if (Games.Any(game => game.Playing && game.User == account2.ID))
+                            player.SendErrorMessage("You are already plying this game.");
                         else
-                            CargoBot.Start(Levels[pack][value], player, account.ID);
+                            cargoBot.Start(Levels[pack][value], player, account2.ID);
                     }))
                 ).Disable(false) as Menu;
 
@@ -252,29 +323,10 @@ namespace CargoBot
                     cargopanel.Summon(menus[value]);
             };
 
-            ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
-            PlayerHooks.PlayerLogout += OnPlayerLogout;
-        }
+            Games.Add(cargoBot);
+            TUI.Create(cargopanel);
 
-        private void OnServerLeave(LeaveEventArgs args)
-        {
-            if (CargoBot.Playing && CargoBot.Player.Index == args.Who)
-                CargoBot.Stop();
-        }
-
-        private void OnPlayerLogout(PlayerLogoutEventArgs args)
-        {
-            if (CargoBot.Playing && CargoBot.Player.Index == args.Player.Index)
-                CargoBot.Stop();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                
-            }
-            base.Dispose(disposing);
+            args.Player.SendSuccessMessage("Created new game instance.");
         }
     }
 }

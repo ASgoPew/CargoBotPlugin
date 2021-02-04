@@ -44,7 +44,7 @@ namespace CargoBot
         }
 
         public void GameOver() =>
-            CargoBotPlugin.CargoBot.GameOver();
+            ((CargoBotGame)Parent.Parent).GameOver();
 
         protected override (int, int) GetSizeNative() =>
             (4, Position + BoxSize + 2);

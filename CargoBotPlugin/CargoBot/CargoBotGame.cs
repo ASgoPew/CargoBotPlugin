@@ -136,7 +136,7 @@ namespace CargoBot
 			Level.LoadTools(this);
 
 			((Panel)Parent).Summon(this);
-			Player.SendInfoMessage($"You session has begun! You have {SessionLength/60000} minutes.");
+			Player.SendInfoMessage($"You session has begun. You have {SessionLength/60000} minutes.");
 
 			int sessionIndex = SessionIndex;
 			Task.Delay(SessionLength).ContinueWith(_ => EndSession(sessionIndex));
@@ -147,7 +147,7 @@ namespace CargoBot
 			if (sessionIndex != SessionIndex || !Playing)
 				return;
 			if (Player.Active)
-				Player.SendInfoMessage("Your session has ended!");
+				Player.SendInfoMessage("Your session has ended.");
 			Stop();
         }
 
@@ -187,7 +187,7 @@ namespace CargoBot
 
 		public void Win()
 		{
-			Player.SendSuccessMessage("You won the game!");
+			Player.SendSuccessMessage("You won the game.");
 			int playingIndex = RunningIndex;
 			int sessionIndex = SessionIndex;
 			Task.Delay(3000).ContinueWith(_ =>

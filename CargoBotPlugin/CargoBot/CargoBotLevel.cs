@@ -40,7 +40,9 @@ namespace CargoBot
 
         protected override void UDBReadNative(BinaryReader br, int user)
         {
-            CargoBotGame game = CargoBotPlugin.CargoBot;
+            CargoBotGame game = CargoBotPlugin.Games.Where(_game => _game.User == user).FirstOrDefault();
+            if (game == null)
+                return;
             try
             {
                 foreach (var line in game.Lines)
@@ -74,7 +76,9 @@ namespace CargoBot
 
         protected override void UDBWriteNative(BinaryWriter bw, int user)
         {
-            CargoBotGame game = CargoBotPlugin.CargoBot;
+            CargoBotGame game = CargoBotPlugin.Games.Where(_game => _game.User == user).FirstOrDefault();
+            if (game == null)
+                return;
 
             int count = game.Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot =>
                 ((Slot)slot).Value > 0 || ((Slot)slot).Condition.HasValue));
