@@ -31,6 +31,7 @@ namespace CargoBot
 
         //public static CargoBotGame CargoBot { get; private set; }
         internal static List<CargoBotGame> Games = new List<CargoBotGame>();
+        public const string ImagePath = "worldedit\\schematic-cargobot.dat";
         private static int PanelIndex = 0;
 
         public CargoBotPlugin(Main game)
@@ -257,10 +258,17 @@ namespace CargoBot
                         args.Player.SendErrorMessage("There are no games.");
                     else
                     {
-                        CargoBotGame game = Games.Last();
-                        TUI.Destroy(game.Root);
-                        Games.Remove(game);
-                        args.Player.SendSuccessMessage("Removed last game instance.");
+                        int x = args.Player.TileX;
+                        int y = args.Player.TileY;
+                        foreach (var game in Games.ToArray())
+                            if (game.Root.Contains(x, y))
+                            {
+                                TUI.Destroy(game.Root);
+                                Games.Remove(game);
+                                args.Player.SendSuccessMessage($"Removed instance {game.Root.Name}.");
+                                return;
+                            }
+                        args.Player.SendErrorMessage("There are no games at this point.");
                     }
                     break;
                 default:

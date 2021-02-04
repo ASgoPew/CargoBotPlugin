@@ -22,3 +22,15 @@ C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.
 C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.csproj.CopyComplete
 C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.dll
 C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.pdb
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\bin\Debug\CargoBot.dll
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\bin\Debug\CargoBot.pdb
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\bin\Debug\FakeProvider.dll
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\bin\Debug\OTAPI.dll
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\bin\Debug\TerrariaServer.exe
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\bin\Debug\TShockAPI.dll
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\bin\Debug\TUI.dll
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.csprojAssemblyReference.cache
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.csproj.CoreCompileInputs.cache
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.csproj.CopyComplete
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.dll
+D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.pdb

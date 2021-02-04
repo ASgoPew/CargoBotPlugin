@@ -47,7 +47,7 @@ namespace CargoBot
         {
 			lock (StaticLocker)
 				if (Slot.Image == null)
-					Slot.Image = ImageData.LoadImage("worldedit\\schematic-cargobot.dat").Tiles;
+					Slot.Image = ImageData.LoadImage(CargoBotPlugin.ImagePath).Tiles;
         }
 
 		protected override void UpdateThisNative()
