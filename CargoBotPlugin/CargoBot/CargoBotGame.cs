@@ -36,6 +36,7 @@ namespace CargoBot
 		public bool Playing;
 		public int SessionLength;
 		public int SessionIndex = 0;
+		public bool WaitingForReset = false;
 
 		public bool Fast => RunDelay == 300;
 
@@ -71,20 +72,19 @@ namespace CargoBot
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.DeepRed },
 				(self, t) => Stop()));
 
-			Running = false;
-			RunLine = 0;
-			RunSlot = 0;
-			RunDelay = 600;
+			Playing = false;
+			User = -1;
 			Level = null;
-			OldSlot = Lines[0].Slots[0];
+			RunDelay = 600;
 			SessionLength = 180000;
+			Reset();
 
 			Name = "CargoBot";
 		}
 
 		public override void Invoke(Touch touch)
 		{
-			if (touch.State == TouchState.End)
+			if (touch.State == TouchState.End && !Running)
 			{
 				var _begin_slot = touch.Session.BeginTouch.Object;
 				if (_begin_slot is Slot begin_slot && begin_slot.WithCondition)
@@ -133,9 +133,9 @@ namespace CargoBot
 			Level = level;
 			UDBRead(user);
 			Level.UDBRead(User);
-			Level.LoadTools(this);
+			Level.LoadStatic(this);
 
-			((Panel)Parent).Summon(this);
+			GetAncestor<Panel>().Summon(this);
 			Player.SendInfoMessage($"You session has begun. You have {SessionLength/60000} minutes.");
 
 			int sessionIndex = SessionIndex;
@@ -146,53 +146,47 @@ namespace CargoBot
         {
 			if (sessionIndex != SessionIndex || !Playing)
 				return;
-			if (Player.Active)
-				Player.SendInfoMessage("Your session has ended.");
 			Stop();
         }
 
 		public void Stop()
 		{
 			Playing = false;
-			UDBWrite(User);
 			Level.UDBWrite(User);
+			UDBWrite(User);
+			User = -1;
+			Level = null;
 			Reset();
-			((Panel)Root).UnsummonAll();
+			GetAncestor<Panel>().UnsummonAll();
+
+			if (Player.Active)
+				Player.SendInfoMessage("Your session has ended.");
 		}
 
 		public void Reset()
 		{
+			WaitingForReset = false;
 			Running = false;
 			RunLine = 0;
 			RunSlot = 0;
-			OldSlot.Style.WallColor = null;
+			if (OldSlot != null)
+				OldSlot.Style.WallColor = null;
 			OldSlot = Lines[0].Slots[0];
 		}
 
-		public void GameOver()
+		public void EndGame(bool win)
 		{
-			Player.SendSuccessMessage("You lost...");
+			Running = false;
+			WaitingForReset = true;
+			if (win)
+				Player.SendSuccessMessage("You won the game.");
+			else
+				Player.SendErrorMessage("You lost...");
 			int playingIndex = RunningIndex;
 			int sessionIndex = SessionIndex;
 			Task.Delay(3000).ContinueWith(_ =>
 			{
-				if (Playing && SessionIndex == sessionIndex && Running && RunningIndex == playingIndex)
-				{
-					Reset();
-					Level.LoadField(this);
-					Apply().Draw();
-				}
-			});
-		}
-
-		public void Win()
-		{
-			Player.SendSuccessMessage("You won the game.");
-			int playingIndex = RunningIndex;
-			int sessionIndex = SessionIndex;
-			Task.Delay(3000).ContinueWith(_ =>
-			{
-				if (Playing && SessionIndex == sessionIndex && Running && RunningIndex == playingIndex)
+				if (Playing && WaitingForReset && SessionIndex == sessionIndex && RunningIndex == playingIndex)
                 {
 					Reset();
 					Level.LoadField(this);
@@ -204,7 +198,7 @@ namespace CargoBot
 		public void Run()
 		{
 			lock (StaticLocker)
-				if (Running)
+				if (Running || WaitingForReset)
 				{
 					Reset();
 					Level.LoadField(this);
@@ -228,13 +222,13 @@ namespace CargoBot
 				RunAction(value);
 				if (value == 2 && Field.Crane.Box == null && Field.CheckWin())
                 {
-					Win();
+					EndGame(true);
 					return;
                 }
 				else if (RunSlot == Lines[RunLine].Slots.Count // Checking if there is no next slot
 					|| Lines[RunLine].Slots.Skip(RunSlot).All(slot => slot.Value == 0))
                 {
-					GameOver();
+					EndGame(false);
 					return;
                 }
 				if (Running)

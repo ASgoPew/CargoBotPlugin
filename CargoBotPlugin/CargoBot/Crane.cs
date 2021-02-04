@@ -44,7 +44,7 @@ namespace CargoBot
         }
 
         public void GameOver() =>
-            ((CargoBotGame)Parent.Parent).GameOver();
+            GetAncestor<CargoBotGame>().EndGame(false);
 
         protected override (int, int) GetSizeNative() =>
             (4, Position + BoxSize + 2);
@@ -93,7 +93,7 @@ namespace CargoBot
         }
 
         public Column GetColumn() =>
-            ((Field)Parent).Columns[Column];
+            GetAncestor<Field>().Columns[Column];
 
         public int GetMaxPosition() =>
             (MaxBoxes - GetColumn().Count() + 1) * BoxSize + 1;

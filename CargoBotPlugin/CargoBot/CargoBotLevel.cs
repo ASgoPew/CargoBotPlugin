@@ -40,7 +40,7 @@ namespace CargoBot
 
         protected override void UDBReadNative(BinaryReader br, int user)
         {
-            CargoBotGame game = CargoBotPlugin.Games.Where(_game => _game.User == user).FirstOrDefault();
+            CargoBotGame game = CargoBotPlugin.GameByUser(user);
             if (game == null)
                 return;
             try
@@ -69,14 +69,14 @@ namespace CargoBot
             }
             catch
             {
-                Load(game);
+                LoadSlots(game);
                 UDBWrite(user);
             }
         }
 
         protected override void UDBWriteNative(BinaryWriter bw, int user)
         {
-            CargoBotGame game = CargoBotPlugin.Games.Where(_game => _game.User == user).FirstOrDefault();
+            CargoBotGame game = CargoBotPlugin.GameByUser(user);
             if (game == null)
                 return;
 
@@ -100,24 +100,11 @@ namespace CargoBot
             }
         }
 
-        public void Load(CargoBotGame game)
+        public void LoadStatic(CargoBotGame game)
         {
             LoadField(game);
+            LoadResultField(game);
             LoadTools(game);
-
-            // Slots
-            for (int i = 0; i < SlotLines.Count(); i++)
-            {
-                var line = SlotLines.ElementAt(i);
-                for (int j = 0; j < line.Count(); j++)
-                {
-                    var command = line.ElementAt(j);
-                    var slot = game.Lines[i].Slots[j];
-                    slot.Value = command.ElementAt(0);
-                    if (command.Count() > 1)
-                        slot.Condition = command.ElementAt(1);
-                }
-            }
         }
 
         public void LoadField(CargoBotGame game)
@@ -139,6 +126,11 @@ namespace CargoBot
                     field.Columns[i].Update();
                 }
             }
+        }
+
+        public void LoadResultField(CargoBotGame game)
+        {
+            Field field = game.Field;
 
             // Field result
             foreach (var column in field.ResultColumns)
@@ -161,6 +153,32 @@ namespace CargoBot
                 var tool = Tools.ElementAt(i);
                 var slot = game.Toolbox[i % 4, i / 4];
                 ((Slot)slot).Value = tool;
+            }
+        }
+
+        public void LoadSlots(CargoBotGame game)
+        {
+            foreach (SlotLine line in game.Lines)
+                foreach (Slot slot in line.ChildrenFromBottom.Skip(1))
+                {
+                    slot.Value = 0;
+                    slot.Condition = null;
+                }
+
+            for (int i = 0; i < SlotLines.Count(); i++)
+            {
+                var line = SlotLines.ElementAt(i);
+                for (int j = 0; j < line.Count(); j++)
+                {
+                    var command = line.ElementAt(j);
+                    var slot = game.Lines[i].Slots[j];
+                    if (command.Count() > 0)
+                    {
+                        slot.Value = command.ElementAt(0);
+                        if (command.Count() > 1)
+                            slot.Condition = command.ElementAt(1);
+                    }
+                }
             }
         }
     }

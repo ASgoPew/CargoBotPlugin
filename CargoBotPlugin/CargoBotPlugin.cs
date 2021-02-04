@@ -30,7 +30,7 @@ namespace CargoBot
         public override string Description => "CargoBot TUI game";
 
         //public static CargoBotGame CargoBot { get; private set; }
-        internal static List<CargoBotGame> Games = new List<CargoBotGame>();
+        internal static Dictionary<int, CargoBotGame> Games = new Dictionary<int, CargoBotGame>();
         public const string ImagePath = "worldedit\\schematic-cargobot.dat";
         private static int PanelIndex = 0;
 
@@ -215,16 +215,19 @@ namespace CargoBot
             Commands.ChatCommands.AddRange(ChatCommands);
         }
 
+        public static CargoBotGame GameByUser(int user) =>
+            Games.Where(pair => pair.Value.User == user).FirstOrDefault().Value;
+
         private void OnServerLeave(LeaveEventArgs args)
         {
-            foreach (CargoBotGame game in Games)
+            foreach (CargoBotGame game in Games.Values)
                 if (game.Playing && game.Player.Index == args.Who)
                     game.Stop();
         }
 
         private void OnPlayerLogout(PlayerLogoutEventArgs args)
         {
-            foreach (CargoBotGame game in Games)
+            foreach (CargoBotGame game in Games.Values)
                 if (game.Playing && game.Player.Index == args.Player.Index)
                     game.Stop();
         }
@@ -236,10 +239,10 @@ namespace CargoBot
                 ServerApi.Hooks.ServerLeave.Deregister(this, OnServerLeave);
                 PlayerHooks.PlayerLogout -= OnPlayerLogout;
 
-                foreach (var cmd in ChatCommands)
+                foreach (Command cmd in ChatCommands)
                     Commands.ChatCommands.Remove(cmd);
 
-                foreach (var game in Games)
+                foreach (CargoBotGame game in Games.Values)
                     TUI.Destroy(game.Root);
                 Games.Clear();
             }
@@ -260,12 +263,12 @@ namespace CargoBot
                     {
                         int x = args.Player.TileX;
                         int y = args.Player.TileY;
-                        foreach (var game in Games.ToArray())
-                            if (game.Root.Contains(x, y))
+                        foreach (var pair in Games)
+                            if (pair.Value.Root.Contains(x, y))
                             {
-                                TUI.Destroy(game.Root);
-                                Games.Remove(game);
-                                args.Player.SendSuccessMessage($"Removed instance {game.Root.Name}.");
+                                TUI.Destroy(pair.Value.Root);
+                                Games.Remove(pair.Key);
+                                args.Player.SendSuccessMessage($"Removed instance {pair.Value.Root.Name}.");
                                 return;
                             }
                         args.Player.SendErrorMessage("There are no games at this point.");
@@ -283,11 +286,12 @@ namespace CargoBot
             int y = args.Player.TileY;
             int w = 20;
             int h = 4;
-            string name = $"Cargobot{PanelIndex++}";
+            string name = $"Cargobot{PanelIndex}";
 
             Panel cargopanel = new Panel(name, x, y, w, h,
                 style: new PanelStyle() { SaveSize = false },
                 provider: FakeProviderAPI.CreateTileProvider(name, x, y, w, h));
+            cargopanel.SetXY(x, y, false);
             Button summon_button = cargopanel.Add(new Button(0, 0, w, h, "cargobot", null,
                 new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.None, Wall = 155 }));
 
@@ -315,7 +319,7 @@ namespace CargoBot
                             cargopanel.Unsummon();
                         else if (!(player.Account is UserAccount account2))
                             player.SendErrorMessage("You have to be logged in to play this game.");
-                        else if (Games.Any(game => game.Playing && game.User == account2.ID))
+                        else if (Games.Any(pair => pair.Value.Playing && pair.Value.User == account2.ID))
                             player.SendErrorMessage("You are already plying this game.");
                         else
                             cargoBot.Start(Levels[pack][value], player, account2.ID);
@@ -331,7 +335,7 @@ namespace CargoBot
                     cargopanel.Summon(menus[value]);
             };
 
-            Games.Add(cargoBot);
+            Games[PanelIndex++] = cargoBot;
             TUI.Create(cargopanel);
 
             args.Player.SendSuccessMessage("Created new game instance.");

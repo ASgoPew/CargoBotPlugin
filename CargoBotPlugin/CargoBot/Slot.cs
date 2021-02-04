@@ -46,8 +46,8 @@ namespace CargoBot
 		protected override void LoadThisNative()
         {
 			lock (StaticLocker)
-				if (Slot.Image == null)
-					Slot.Image = ImageData.LoadImage(CargoBotPlugin.ImagePath).Tiles;
+				if (Image == null)
+                    Image = ImageData.LoadImage(CargoBotPlugin.ImagePath).Tiles;
         }
 
 		protected override void UpdateThisNative()
@@ -61,7 +61,7 @@ namespace CargoBot
 
 		protected override void ApplyThisNative()
 		{
-			var image = Slot.Image;
+			var image = Image;
 			var y_range = WithCondition ? Height - 1 : Height;
 			var dy = WithCondition ? 1 : 0;
 			var image_dx = 4 * Value;
@@ -84,11 +84,11 @@ namespace CargoBot
 				if (tile != null)
 					if (Condition.HasValue)
 					{
-						tile.wall = Slot.Walls[1 - Index];
+						tile.wall = Walls[1 - Index];
 						if (Condition.Value < 5)
-							tile.wallColor(Slot.ConditionColors[Condition.Value]);
+							tile.wallColor(ConditionColors[Condition.Value]);
 						else if (Condition.Value == 5)
-							tile.wallColor(Slot.ConditionColors[x]);
+							tile.wallColor(ConditionColors[x]);
 					}
 					else
 					{
@@ -102,7 +102,7 @@ namespace CargoBot
 
 		public override void Invoke(Touch touch)
 		{
-			if (touch.State == TouchState.End)
+			if (touch.State == TouchState.End && !GetAncestor<CargoBotGame>().Running)
 			{
 				var _begin_slot = touch.Session.BeginTouch.Object;
 				if (!(_begin_slot is Slot begin_slot) || begin_slot.Root != Root)
