@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using TerrariaUI.Base;
 
 namespace CargoBot
@@ -20,7 +19,7 @@ namespace CargoBot
                 if (game == null)
                     return;
                 bool fast = br.ReadBoolean();
-                game.RunDelay = fast ? 300 : 600;
+                game.RunDelay = fast ? CargoBotGame.FastDelay : CargoBotGame.SlowDelay;
                 game.SpeedCheckbox.SetValue(fast, false, game.Player.Index);
             }
             catch

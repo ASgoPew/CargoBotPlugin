@@ -23,10 +23,9 @@ namespace CargoBot
         public override string Author => "ASgo & Anzhelika";
         public override string Description => "CargoBot TUI game";
 
-        public static Dictionary<int, CargoBotGame> Games = new Dictionary<int, CargoBotGame>();
         public const int MaxInstances = 255;
-        private static PanelsSaver PanelsSaver;
         internal static UserSaver UserSaver = new UserSaver();
+        public static Application Application;
 
         public CargoBotPlugin(Main game)
             : base(game)
@@ -95,8 +94,6 @@ namespace CargoBot
 
         #endregion
 
-        #endregion
-
         public static Dictionary<string, Dictionary<string, CargoBotLevel>> Levels =
             new Dictionary<string, Dictionary<string, CargoBotLevel>>()
             {
@@ -162,10 +159,9 @@ namespace CargoBot
                 }*/
             };
 
-        private static Command[] ChatCommands = new Command[]
-        {
-            new Command("TUI.control", CargoBotCommand, "cargobot", "cargo")
-        };
+        #endregion
+
+        private static Command[] ChatCommands = new Command[] { };
 
         public override void Initialize()
         {
@@ -174,23 +170,25 @@ namespace CargoBot
 
             Commands.ChatCommands.AddRange(ChatCommands);
 
-            PanelsSaver = new PanelsSaver();
-            PanelsSaver.DBRead();
+            Application = new Application("cargobot", CreateGameInstance);
+            TUI.RegisterApplication(Application);
         }
 
-        public static CargoBotGame GameByUser(int user) =>
-            Games.Where(pair => pair.Value.User == user).FirstOrDefault().Value;
+        public static IEnumerable<CargoBotGame> Games => Application.Instances.Values
+            .Select(instance => (CargoBotGame)instance["game"]);
+
+        public static CargoBotGame GameByUser(int user) => Games.Where(game => game.User == user).FirstOrDefault();
 
         private void OnServerLeave(LeaveEventArgs args)
         {
-            foreach (CargoBotGame game in Games.Values)
+            foreach (CargoBotGame game in Games)
                 if (game.Playing && game.Player.Index == args.Who)
                     game.Stop();
         }
 
         private void OnPlayerLogout(PlayerLogoutEventArgs args)
         {
-            foreach (CargoBotGame game in Games.Values)
+            foreach (CargoBotGame game in Games)
                 if (game.Playing && game.Player.Index == args.Player.Index)
                     game.Stop();
         }
@@ -204,74 +202,19 @@ namespace CargoBot
 
                 foreach (Command cmd in ChatCommands)
                     Commands.ChatCommands.Remove(cmd);
-
-                foreach (CargoBotGame game in Games.Values)
-                    TUI.Destroy(game.Root);
-                Games.Clear();
             }
             base.Dispose(disposing);
         }
 
-        private static void CargoBotCommand(CommandArgs args)
+        public static Panel CreateGameInstance(string name)
         {
-            switch (args.Parameters.FirstOrDefault()?.ToLower())
-            {
-                case "add":
-                    if (Games.Count >= MaxInstances)
-                        args.Player.SendErrorMessage($"Too many game instances: {Games.Count}");
-                    else
-                    {
-                        CreateGameInstance(args.Player.TileX, args.Player.TileY);
-                        args.Player.SendSuccessMessage("Created new game instance.");
-                    }
-                    break;
-                case "remove":
-                    if (Games.Count == 0)
-                        args.Player.SendErrorMessage("There are no games.");
-                    else
-                    {
-                        int x = args.Player.TileX;
-                        int y = args.Player.TileY;
-                        foreach (var pair in Games)
-                        {
-                            Panel panel = pair.Value.GetAncestor<Panel>();
-                            if (panel.Contains(x, y))
-                            {
-                                DestroyGameInstance(pair.Key);
-                                args.Player.SendSuccessMessage($"Removed instance {panel.Name}.");
-                                return;
-                            }
-                        }
-                        args.Player.SendErrorMessage("There are no games at this point.");
-                    }
-                    break;
-                default:
-                    args.Player.SendErrorMessage("Usage: /cargobot <add/remove>");
-                    break;
-            }
-        }
-
-        public static void CreateGameInstance(int x, int y, int? _panelIndex = null)
-        {
-            int panelIndex = 0;
             int w = 20;
             int h = 4;
-            if (_panelIndex.HasValue)
-                panelIndex = _panelIndex.Value;
-            else
-                while (Games.ContainsKey(panelIndex))
-                    panelIndex++;
 
-            string name = $"Cargobot{panelIndex}";
-
-            Panel cargopanel = new Panel(name, x, y, w, h,
+            Panel cargopanel = new Panel(name, 0, 0, w, h,
                 style: new PanelStyle() { SavePosition = true, SaveSize = false, SaveEnabled = true },
-                provider: FakeProviderAPI.CreateTileProvider(name, x, y, w, h));
-            if (x > 0 && y > 0)
-            {
-                cargopanel.SetXY(x, y, false);
-                cargopanel.SavePanel();
-            }
+                provider: FakeProviderAPI.CreateTileProvider(name, 0, 0, w, h));
+
             Button summon_button = cargopanel.Add(new Button(0, 0, w, h, "cargobot", null,
                 new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.None, Wall = 155 }));
 
@@ -284,6 +227,7 @@ namespace CargoBot
 
             CargoBotGame cargoBot = cargopanel.Add(new CargoBotGame(0, 0));
             cargoBot.Disable(false);
+            cargopanel["game"] = cargoBot;
 
             Dictionary<string, Menu> menus = new Dictionary<string, Menu>();
             foreach (string pack in Levels.Keys)
@@ -299,7 +243,7 @@ namespace CargoBot
                             cargopanel.Unsummon();
                         else if (!(player.Account is UserAccount account2))
                             player.SendErrorMessage("You have to be logged in to play this game.");
-                        else if (Games.Any(pair => pair.Value.Playing && pair.Value.User == account2.ID))
+                        else if (Games.Any(pair => pair.Playing && pair.User == account2.ID))
                             player.SendErrorMessage("You are already playing this game.");
                         else
                             cargoBot.Start(Levels[pack][value], player, account2.ID);
@@ -315,17 +259,7 @@ namespace CargoBot
                     cargopanel.Summon(menus[value]);
             };
 
-            Games[panelIndex++] = cargoBot;
-            TUI.Create(cargopanel);
-            PanelsSaver.DBWrite();
-        }
-
-        public static void DestroyGameInstance(int index)
-        {
-            CargoBotGame game = Games[index];
-            TUI.Destroy(game.GetAncestor<Panel>());
-            Games.Remove(index);
-            PanelsSaver.DBWrite();
+            return cargopanel;
         }
     }
 }

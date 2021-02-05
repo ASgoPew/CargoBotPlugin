@@ -73,6 +73,7 @@ namespace CargoBot
 					var tile = Tile(x, y + dy);
 					if (tile == null)
 						continue;
+					tile.ClearEverything();
 					tile.wall = Walls[Index];
 					tile.wallColor((byte)PaintID2.Gray);
 					if ((Value == 1 && (y == 1 || y == 2 || x == 2))

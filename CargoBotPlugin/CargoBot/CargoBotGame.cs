@@ -10,14 +10,15 @@ using TShockAPI;
 
 namespace CargoBot
 {
-    public class CargoBotGame : VisualContainer
+	public class CargoBotGame : VisualContainer
 	{
+		public const int SlowDelay = 600;
+		public const int FastDelay = 200;
+		public const int MaxRunningTime = 60000;
+		public const int SessionLength = 180000;
+		public const int ResultsDelay = 3000;
+
 		private static object StaticLocker = new object();
-		private static int SlowDelay = 600;
-		private static int FastDelay = 200;
-		private static int MaxRunningTime = 60000;
-		private static int SessionLength = 180000;
-		private static int ResultsDelay = 3000;
 
 		public Field Field;
 		public List<SlotLine> Lines;
