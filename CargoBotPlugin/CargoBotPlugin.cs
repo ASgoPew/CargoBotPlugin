@@ -60,7 +60,7 @@ namespace CargoBot
                 new int[] { 3, 2, 3, 2, 1, 0 }
             },
             new int[] { 1, 2, 3, 0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 },
-            (10, 10, 6),
+            (10, 8, 6),
             "kek hint");
 
         #endregion
@@ -260,6 +260,22 @@ namespace CargoBot
             };
 
             return cargopanel;
+        }
+
+        public static void Firework(TSPlayer player, int count)
+        {
+            int type = 170; // yellow
+            float dx = 16 * 15f;
+            float beginX = 0;
+            if (count > 1)
+                beginX = -(dx/2f) * (count - 1);
+            float dy = -16 * 4f;
+            for (int i = 0; i < count; i++)
+            {
+                int p = Projectile.NewProjectile(player.TPlayer.position.X + beginX + i * dx,
+                    player.TPlayer.position.Y + dy, 0f, -8f, type, 0, (float)0);
+                Main.projectile[p].Kill();
+            }
         }
     }
 }

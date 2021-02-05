@@ -116,7 +116,6 @@ namespace CargoBot
 			Playing = true;
 			SessionIndex++;
 			Level = level;
-			BeginTime = DateTime.UtcNow;
 			CargoBotPlugin.UserSaver.UDBRead(User);
 			Level.UDBRead(User);
 			Level.LoadStatic(this);
@@ -174,7 +173,13 @@ namespace CargoBot
 			if (win.HasValue)
 			{
 				if (win.Value)
-					Player.SendSuccessMessage("You won the game.");
+                {
+					(int x, int xx, int xxx) = Level.Stars;
+					int count = Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot => ((Slot)slot).Value > 0));
+					int stars = count <= xxx ? 3 : (count <= xx ? 2 : count <= x ? 1 : 0);
+					Player.SendSuccessMessage($"You won the game. You have achieved {stars} stars.");
+					CargoBotPlugin.Firework(Player, stars);
+                }
 				else
 					Player.SendErrorMessage("You lost...");
 			}
@@ -190,6 +195,7 @@ namespace CargoBot
 						Stop();
 					else if (WaitingForReset && RunningIndex == playingIndex)
 					{
+						Level.UDBWrite(User);
 						Reset();
 						Level.LoadField(this);
 						Apply().Draw();
@@ -211,6 +217,7 @@ namespace CargoBot
 				{
 					Running = true;
 					RunningIndex++;
+					BeginTime = DateTime.UtcNow;
 					RunMove();
 				}
 		}
