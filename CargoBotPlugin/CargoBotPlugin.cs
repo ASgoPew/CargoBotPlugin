@@ -545,6 +545,541 @@ namespace CargoBot
             "Another stack puzzle. Re-use the solution from the previous level with a small modification.\n\nThe shortest known solution uses 8 registers.");
 
         #endregion
+        #region 21
+
+        public static CargoBotLevel level_21 = new CargoBotLevel("Up The Greens", 1,
+            new List<int[]>
+            {
+                new int[] { g },
+                new int[] { b, b },
+                new int[] { g },
+                new int[] { },
+                new int[] { b, b, b },
+                new int[] { g },
+                new int[] { b, b },
+                new int[] { b, b },
+            },
+            new List<int[]>
+            {
+                new int[] { g, b, b },
+                new int[] { },
+                new int[] { g, b, b, b },
+                new int[] { },
+                new int[] { },
+                new int[] { g, b, b, b, b },
+                new int[] { },
+                new int[] { },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, green_condition, no_condition, multi_condition },
+            (12, 9, 7),
+            "Very similar to the previous two levels but let the stack unwind and reset when you find a green. To do this only go left if holding a blue.\n\nThe shortest known solution uses 7 registers.");
+
+        #endregion
+        #region 22
+
+        public static CargoBotLevel level_22 = new CargoBotLevel("Fill The Blanks", 1,
+            new List<int[]>
+            {
+                new int[] { g, g, g, g },
+                new int[] { r },
+                new int[] { },
+                new int[] { r },
+                new int[] { },
+                new int[] { },
+                new int[] { r },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { r },
+                new int[] { g },
+                new int[] { r },
+                new int[] { g },
+                new int[] { g },
+                new int[] { r },
+                new int[] { g },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                red_condition, green_condition, no_condition, multi_condition },
+            (20, 14, 11),
+            "As in the \"Lay It Out\" level, move the entire pile one slot to the right and bring one crate back to the left, except in the first iteration.\n\nThe shortest known solution uses 11 registers.");
+
+        #endregion
+        #region 23
+
+        public static CargoBotLevel level_23 = new CargoBotLevel("Count The Blues", 1,
+            new List<int[]>
+            {
+                new int[] { y, b, b },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { y, b },
+                new int[] { },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, b },
+                new int[] { },
+                new int[] { y },
+                new int[] { },
+                new int[] { b },
+                new int[] { y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, yellow_condition, no_condition, multi_condition },
+            (15, 12, 9),
+            "Another stack puzzle. The number of blues indicates how many times to go right with the yellow.\n\nThe shortest known solution uses 9 registers.");
+
+        #endregion
+        #region 24
+
+        public static CargoBotLevel level_24 = new CargoBotLevel("Multi Sort", 1,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, y },
+                new int[] { },
+                new int[] { y, y, b },
+                new int[] { y, b, y, b },
+                new int[] { b, y },
+                new int[] { b },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { y, y, y, y, y, y },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { b, b, b, b, b, b },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, yellow_condition, no_condition, multi_condition },
+            (16, 11, 11),
+            "Come Together for yellows, The Stacker for blues. Go forward until you find a crate. If blue, move it one slot further and come all the way back (using the stack) empty handed. If yellow, bring it back and drop it. Repeat.\n\nThe shortest known solution uses 11 registers.");
+
+        #endregion
+        #region 25
+
+        public static CargoBotLevel level_25 = new CargoBotLevel("Divide by two", 1,
+            new List<int[]>
+            {
+                new int[] { b, b, b, b },
+                new int[] { },
+                new int[] { b, b },
+                new int[] { },
+                new int[] { b, b, b, b, b, b },
+                new int[] { },
+                new int[] { b, b, b, b },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { b, b },
+                new int[] { b, b },
+                new int[] { b },
+                new int[] { b },
+                new int[] { b, b, b },
+                new int[] { b, b, b },
+                new int[] { b, b },
+                new int[] { b, b },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, no_condition },
+            (20, 14, 12),
+            "Wind up the stack for every two crates. Move one crate back each time it unwinds.\n\nThe shortest known solution uses 12 registers.");
+
+        #endregion
+        #region 26
+
+        public static CargoBotLevel level_26 = new CargoBotLevel("The Merger", 1,
+            new List<int[]>
+            {
+                new int[] { b, b, b },
+                new int[] { },
+                new int[] { r, r, r },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, r, b, r, b, r },
+                new int[] { },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, red_condition, no_condition, multi_condition },
+            (9, 7, 6),
+            "Use the stack once in each blue, and unwind it in each red.\n\nThe shortest known solution uses 6 registers.");
+
+        #endregion
+        #region 27
+
+        public static CargoBotLevel level_27 = new CargoBotLevel("Even the Odds", 1,
+            new List<int[]>
+            {
+                new int[] { g, g, g, g, g },
+                new int[] { },
+                new int[] { r, r },
+                new int[] { },
+                new int[] { b, b, b },
+                new int[] { },
+                new int[] { y, y, y, y },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { g },
+                new int[] { g, g, g, g },
+                new int[] { },
+                new int[] { r, r },
+                new int[] { b },
+                new int[] { b, b },
+                new int[] { },
+                new int[] { y, y, y, y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, red_condition, green_condition, yellow_condition, no_condition, multi_condition },
+            (13, 11, 10),
+            "If the pile has an odd number of crates, leave one crate behind, otherwise move all of them. Use a sequence of moves that undoes itself when repeated to move the crates right, and make sure to execute it an even number of times.\n\nThe shortest known solution uses 10 registers.");
+
+        #endregion
+        #region 28
+
+        public static CargoBotLevel level_28 = new CargoBotLevel("Genetic Code", 1,
+            new List<int[]>
+            {
+                new int[] { g, y, y, g, y, g },
+                new int[] { },
+                new int[] { y, y, y },
+                new int[] { },
+                new int[] { g, g, g },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { g, y, g, y, y, g },
+                new int[] { },
+                new int[] { g, y, y, g, y, g },
+                new int[] { },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                green_condition, yellow_condition, no_condition, multi_condition },
+            (29, 20, 17),
+            "The left pile gives instructions for how to construct the right pile. Wind up the entire stack on the left and unwind on the right.\n\nThe shortest known solution uses 17 registers.");
+
+        #endregion
+        #region 29
+
+        public static CargoBotLevel level_29 = new CargoBotLevel("Multi Sort 2", 1,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, y, r, g, y },
+                new int[] { },
+                new int[] { r, b, b, g, g, y },
+                new int[] { },
+                new int[] { r, g, y, r, b },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { b, b, b, b },
+                new int[] { },
+                new int[] { r, r, r, r },
+                new int[] { },
+                new int[] { g, g, g, g },
+                new int[] { },
+                new int[] { y, y, y, y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, red_condition, green_condition, yellow_condition, no_condition, multi_condition },
+            (25, 17, 17),
+            "Go over each pile and either pick up conditional on none if over the even slots, or drop conditional on the corresponding color if over the odd slots.\n\nThe shortest known solution uses 17 registers.");
+
+        #endregion
+        #region 30
+
+        public static CargoBotLevel level_30 = new CargoBotLevel("The Swap", 2,
+            new List<int[]>
+            {
+                new int[] { r, r, r },
+                new int[] { },
+                new int[] { g, g, g },
+            },
+            new List<int[]>
+            {
+                new int[] { g, g, g },
+                new int[] { },
+                new int[] { r, r, r },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                red_condition, green_condition, no_condition, multi_condition },
+            (15, 12, 10),
+            "Merge the piles in the middle, change parity, and unmerge.\n\nThe shortest known solution uses 10 registers.");
+
+        #endregion
+        #region 31
+
+        public static CargoBotLevel level_31 = new CargoBotLevel("Restoring Order", 1,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, r, b, b },
+                new int[] { r, b, r, b },
+                new int[] { b, b, b },
+                new int[] { r },
+                new int[] { r, b },
+                new int[] { b },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, b, b },
+                new int[] { b, b },
+                new int[] { b, b, b },
+                new int[] { },
+                new int[] { b },
+                new int[] { b },
+                new int[] { r, r, r, r, r },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, red_condition, no_condition, multi_condition },
+            (29, 20, 16),
+            "For each pile move the reds one slot to the right and the blues one slot to the left, but make sure to wind up a stack for the blues so that you can put them back afterwards. Repeat for each pile.\n\nThe shortest known solution uses 16 registers.");
+
+        #endregion
+        #region 32
+
+        public static CargoBotLevel level_32 = new CargoBotLevel("Changing  Places", 1,
+            new List<int[]>
+            {
+                new int[] { r },
+                new int[] { r, r, r },
+                new int[] { g, g, g },
+                new int[] { },
+                new int[] { r, r, r, r },
+                new int[] { r, r },
+                new int[] { g, g, g, g },
+                new int[] { g },
+            },
+            new List<int[]>
+            {
+                new int[] { r, r, r },
+                new int[] { r },
+                new int[] { },
+                new int[] { g, g, g },
+                new int[] { r, r },
+                new int[] { r, r, r, r },
+                new int[] { g },
+                new int[] { g, g, g, g },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                red_condition, green_condition, no_condition, multi_condition },
+            (20, 18, 17),
+            "Switch each pair of piles, in place. First move the left pile to the right, winding up the stack. Then move all crates to the left slot. Finally, unwind the stack moving a crate to the right each time.\n\nThe shortest known solution uses 17 registers.");
+
+        #endregion
+        #region 33
+
+        public static CargoBotLevel level_33 = new CargoBotLevel("Palette Swap", 2,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { r, b },
+                new int[] { b, r, b, r },
+                new int[] { b, r },
+                new int[] { b, r, b, r },
+                new int[] { },
+                new int[] { b, r, b, r, b, r },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, r },
+                new int[] { r, b, r, b },
+                new int[] { r, b },
+                new int[] { r, b, r, b },
+                new int[] { },
+                new int[] { r, b, r, b, r, b },
+                new int[] { },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, red_condition, no_condition, multi_condition },
+            (29, 18, 15),
+            "Go left and go right. Each time you do so, wind up the stack. When no more crates are left, unwind the stack going left and going right. Repeat. \n\nThe shortest known solution uses 15 registers.");
+
+        #endregion
+        #region 34
+
+        public static CargoBotLevel level_34 = new CargoBotLevel("Mirror 2", 1,
+            new List<int[]>
+            {
+                new int[] { y, y, y },
+                new int[] { y, y },
+                new int[] { y },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { y },
+                new int[] { y, y },
+                new int[] { y, y, y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                yellow_condition, no_condition },
+            (20, 15, 12),
+            "Move the top crate of the 2nd pile one slot to the right, and bring the left pile all the way to the right.\n\nThe shortest known solution uses 12 registers.");
+
+        #endregion
+        #region 35
+
+        public static CargoBotLevel level_35 = new CargoBotLevel("Changing Places 2", 1,
+            new List<int[]>
+            {
+                new int[] { r },
+                new int[] { r, r, r },
+                new int[] { r },
+                new int[] { r, r, r, r, r },
+                new int[] { },
+                new int[] { r, r },
+                new int[] { r, r, r, r },
+                new int[] { r, r, r },
+            },
+            new List<int[]>
+            {
+                new int[] { r, r, r },
+                new int[] { r },
+                new int[] { r, r, r, r, r },
+                new int[] { },
+                new int[] { r, r },
+                new int[] { r, r, r, r },
+                new int[] { r, r, r },
+                new int[] { r },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                red_condition, no_condition },
+            (25, 19, 16),
+            "As in Changing Places, swap piles. Do that once for each pair of consecutive piles and you're done.\n\nThe shortest known solution uses 16 registers.");
+
+        #endregion
+        #region 36
+
+        public static CargoBotLevel level_36 = new CargoBotLevel("Vertical Sort", 2,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { g, b, g, b, b },
+                new int[] { b, g, b },
+                new int[] { g, b, b, g },
+                new int[] { b, g },
+                new int[] { b, g, g, g, b },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { g, g, b, b, b },
+                new int[] { g, b, b },
+                new int[] { g, g, b, b },
+                new int[] { g, b },
+                new int[] { g, g, g, b, b },
+                new int[] { },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, green_condition, no_condition, multi_condition },
+            (29, 29, 20),
+            "Draw on ideas from previous sort levels.");
+
+        #endregion
+        #region 37
+
+        public static CargoBotLevel level_37 = new CargoBotLevel("Count in Binary", 1,
+            new List<int[]>
+            {
+                new int[] { g, g, g, g, g, g },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { g, g },
+                new int[] { },
+                new int[] { g },
+                new int[] { g },
+                new int[] { g },
+                new int[] { },
+                new int[] { g },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                green_condition, no_condition },
+            (29, 23, 17),
+            "Count up all the numbers in binary: 1, 10, 11, 100,...");
+
+        #endregion
+        #region 38
+
+        public static CargoBotLevel level_38 = new CargoBotLevel("Parting the Sea", 1,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, b },
+                new int[] { b, b },
+                new int[] { b, b },
+                new int[] { b, b },
+                new int[] { b, b },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { b, b, b, b, b },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { b, b, b, b, b },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, no_condition },
+            (17, 17, 17),
+            "Nothing.");
+
+        #endregion
+        #region 39
+
+        public static CargoBotLevel level_39 = new CargoBotLevel("The Trick", 2,
+            new List<int[]>
+            {
+                new int[] { y, r },
+                new int[] { },
+                new int[] { r, y },
+            },
+            new List<int[]>
+            {
+                new int[] { r, y },
+                new int[] { },
+                new int[] { y, r },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                red_condition, yellow_condition, no_condition, multi_condition },
+            (20, 14, 11),
+            "Bring the right pile to the middle, then the left pile to the middle. Finally unmerge the piles to their respective sides. \n\nThe shortest known solution uses 11 registers.");
+
+        #endregion
 
         public static Dictionary<string, Dictionary<string, CargoBotLevel>> Levels =
             new Dictionary<string, Dictionary<string, CargoBotLevel>>()
@@ -583,13 +1118,13 @@ namespace CargoBot
                     {
                         { "Come Together", level_19 },
                         { "Come Together 2", level_20 },
-                        /*{ "Up The Greens", level_21 },
+                        { "Up The Greens", level_21 },
                         { "Fill The Blanks", level_22 },
                         { "Count The Blues", level_23 },
-                        { "Multi Sort", level_24 },*/
+                        { "Multi Sort", level_24 },
                     }
                 },
-                /*{ "Crazy", new Dictionary<string, CargoBotLevel>()
+                { "Crazy", new Dictionary<string, CargoBotLevel>()
                     {
                         { "Divide by two", level_25 },
                         { "The Merger", level_26 },
@@ -608,7 +1143,14 @@ namespace CargoBot
                         { "Changing Places 2", level_35 },
                         { "Vertical Sort", level_36 },
                     }
-                }*/
+                },
+                { "Unknown", new Dictionary<string, CargoBotLevel>()
+                    {
+                        { "Count in Binary", level_37 },
+                        { "Parting the Sea", level_38 },
+                        { "The Trick", level_39 },
+                    }
+                }
             };
 
         #endregion
