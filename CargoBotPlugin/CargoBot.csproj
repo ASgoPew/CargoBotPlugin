@@ -54,6 +54,9 @@
     <Reference Include="TUI">
       <HintPath>_References\TUI.dll</HintPath>
     </Reference>
+    <Reference Include="TUIPlugin">
+      <HintPath>_References\TUIPlugin.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CargoBot\CargoBotGame.cs" />

@@ -7,6 +7,7 @@ using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
 using TerrariaUI.Widgets;
 using TShockAPI;
+using TUIPlugin;
 
 namespace CargoBot
 {
@@ -67,7 +68,7 @@ namespace CargoBot
 
 			HintButton = Add(new Button(36, 42, 10, 4, "hint", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.Gray },
-				(self, t) => TShock.Players[t.PlayerIndex]?.SendInfoMessage($"Hint: {Level.Hint}")));
+				(self, t) => t.Player().SendInfoMessage($"Hint: {Level.Hint}")));
 
 			SpeedCheckbox = Add(new Checkbox(47, 43, 2, new CheckboxStyle()
 				{ Wall = 156, WallColor = PaintID2.Gray, CheckedColor = PaintID2.DeepOrange },
@@ -105,7 +106,7 @@ namespace CargoBot
         protected override bool CanTouchNative(Touch touch)
         {
             return base.CanTouchNative(touch) && touch.PlayerIndex == Player.Index
-				|| TShock.Players[touch.PlayerIndex].HasPermission("TUI.control");
+				|| touch.Player().HasPermission("TUI.control");
         }
 
         public void Start(CargoBotLevel level, TSPlayer player, int user)
@@ -177,8 +178,8 @@ namespace CargoBot
 					(int x, int xx, int xxx) = Level.Stars;
 					int count = Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot => ((Slot)slot).Value > 0));
 					int stars = count <= xxx ? 3 : (count <= xx ? 2 : count <= x ? 1 : 0);
-					Player.SendSuccessMessage($"You won the game. You have achieved {stars} stars.");
-					CargoBotPlugin.Firework(Player, stars);
+					Player.SendSuccessMessage($"You won the game. You have achieved [c/ff0000:{stars}] stars.");
+					Player.Firework(stars);
                 }
 				else
 					Player.SendErrorMessage("You lost...");

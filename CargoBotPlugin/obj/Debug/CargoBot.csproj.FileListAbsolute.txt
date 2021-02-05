@@ -34,3 +34,4 @@ D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.csproj.Core
 D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.csproj.CopyComplete
 D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.dll
 D:\YandexDisk\Repos\CargoBotPlugin\CargoBotPlugin\obj\Debug\CargoBot.pdb
+C:\Users\ASgo\Documents\GitHub\CargoBotPlugin\CargoBotPlugin\bin\Debug\TUIPlugin.dll

@@ -261,21 +261,5 @@ namespace CargoBot
 
             return cargopanel;
         }
-
-        public static void Firework(TSPlayer player, int count)
-        {
-            int type = 170; // yellow
-            float dx = 16 * 15f;
-            float beginX = 0;
-            if (count > 1)
-                beginX = -(dx/2f) * (count - 1);
-            float dy = -16 * 4f;
-            for (int i = 0; i < count; i++)
-            {
-                int p = Projectile.NewProjectile(player.TPlayer.position.X + beginX + i * dx,
-                    player.TPlayer.position.Y + dy, 0f, -8f, type, 0, (float)0);
-                Main.projectile[p].Kill();
-            }
-        }
     }
 }
