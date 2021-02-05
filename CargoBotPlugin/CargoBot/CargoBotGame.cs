@@ -44,10 +44,10 @@ namespace CargoBot
 		public bool Fast => RunDelay == FastDelay;
 
 		public CargoBotGame(int x, int y)
-			: base(x, y, 56, 47, new UIConfiguration() { UseEnd = true, BeginRequire = false },
+			: base(x, y, 0, 0, new UIConfiguration() { UseEnd = true, BeginRequire = false },
 				  new ContainerStyle() { Wall = 155 })
 		{
-			Field = Add(new Field(1, 1, 8, 6, 2, 2, 2, 1, TileID.EmeraldGemspark,
+			Field = Add(new Field(1, 1, 8, 7, 2, 2, 2, 1, TileID.EmeraldGemspark,
 				PaintID2.Shadow, new UIStyle() { Wall = 155, WallColor = PaintID2.White }));
 			Add(new VisualObject(1, Field.Height + 5, 4, 22, new UIConfiguration() { UseBegin = false },
 				new UIStyle() { Wall = WallID.SapphireGemspark }));
@@ -56,25 +56,25 @@ namespace CargoBot
 			for (int i = 0; i < 4; i++)
 				Lines.Add(Add(new SlotLine(1, Field.Height + 4 + i * 6, i, i < 3 ? 8 : 5)));
 
-			Add(new Label(1, 21, 10, 2, "stars"));
-			StarsCountLabel = Add(new Label(12, 21, 2, 2, "0", new LabelStyle() { WallColor = PaintID2.DeepRed }));
+			Add(new Label(1, 1 + Field.Height + 1, 10, 2, "stars"));
+			StarsCountLabel = Add(new Label(12, 1 + Field.Height + 1, 2, 2, "0", new LabelStyle() { WallColor = PaintID2.DeepRed }));
 
-			Add(new Label(39, 21, 16, 2, "toolbox"));
-			Toolbox = Add(new Toolbox(39, 24, 4, 4));
+			Add(new Label(39, 1 + Field.Height + 1, 16, 2, "toolbox"));
+			Toolbox = Add(new Toolbox(39, 1 + Field.Height + 4, 4, 4));
 
-			Add(new Button(27, 42, 8, 4, "run", null,
+			Add(new Button(27, 1 + Field.Height + 4 + Toolbox.Height + 2, 8, 4, "run", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156 },
 				(self, t) => Run()));
 
-			Add(new Button(36, 42, 10, 4, "hint", null,
+			Add(new Button(36, 1 + Field.Height + 4 + Toolbox.Height + 2, 10, 4, "hint", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.Gray },
 				(self, t) => t.Player().SendInfoMessage($"Hint: {Level.Hint}")));
 
-			SpeedCheckbox = Add(new Checkbox(47, 43, 2, new CheckboxStyle()
+			SpeedCheckbox = Add(new Checkbox(47, 1 + Field.Height + 4 + Toolbox.Height + 3, 2, new CheckboxStyle()
 				{ Wall = 156, WallColor = PaintID2.Gray, CheckedColor = PaintID2.DeepOrange },
 				new Input<bool>(false, false, (self, value, player) => RunDelay = value ? FastDelay : SlowDelay)));
 
-			Add(new Button(51, 42, 4, 4, "x", null,
+			Add(new Button(51, 1 + Field.Height + 4 + Toolbox.Height + 2, 4, 4, "x", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.DeepRed },
 				(self, t) => Stop()));
 
@@ -85,6 +85,8 @@ namespace CargoBot
 			Reset();
 
 			Name = "CargoBot";
+
+			SetWH(1 + Field.Width + 1, 1 + Field.Height + 4 + Toolbox.Height + 2 + 4 + 1, false);
 		}
 
 		public override void Invoke(Touch touch)

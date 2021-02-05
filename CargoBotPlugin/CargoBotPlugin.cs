@@ -487,6 +487,64 @@ namespace CargoBot
             "A disguised version of Mirror.");
 
         #endregion
+        #region 19
+
+        public static CargoBotLevel level_19 = new CargoBotLevel("Come Together", 1,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { },
+                new int[] { y, y, y },
+                new int[] { y },
+                new int[] { },
+                new int[] { },
+                new int[] { y, y },
+            },
+            new List<int[]>
+            {
+                new int[] { y, y, y, y, y, y },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                yellow_condition, no_condition },
+            (15, 9, 7),
+            "You can go right and find a yellow crate, but when bringing it back how do you know when to stop so that you don't crash into the wall?\n\nIn F2 use the programming stack to count the number of times you have to go right until you find a yellow crate, then go back left that same number of times. Another way to look at it: F2 is a recursive function that goes right until it finds a crate, and then it goes back to the original position. It can be implemented with 4 registers.\n\nThe shortest known solution uses a total of 7 registers.");
+
+        #endregion
+        #region 20
+
+        public static CargoBotLevel level_20 = new CargoBotLevel("Come Together 2", 1,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { y },
+                new int[] { y, g, g },
+                new int[] { y },
+                new int[] { y, g },
+                new int[] { y },
+                new int[] { g, g, g, g },
+            },
+            new List<int[]>
+            {
+                new int[] { g, g, g, g, g, g, g },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                green_condition, yellow_condition, no_condition, multi_condition },
+            (12, 10, 8),
+            "Another stack puzzle. Re-use the solution from the previous level with a small modification.\n\nThe shortest known solution uses 8 registers.");
+
+        #endregion
 
         public static Dictionary<string, Dictionary<string, CargoBotLevel>> Levels =
             new Dictionary<string, Dictionary<string, CargoBotLevel>>()
@@ -521,17 +579,17 @@ namespace CargoBot
                         { "Clarity", level_18 },
                     }
                 },
-                /*{ "Hard", new Dictionary<string, CargoBotLevel>()
+                { "Hard", new Dictionary<string, CargoBotLevel>()
                     {
                         { "Come Together", level_19 },
                         { "Come Together 2", level_20 },
-                        { "Up The Greens", level_21 },
+                        /*{ "Up The Greens", level_21 },
                         { "Fill The Blanks", level_22 },
                         { "Count The Blues", level_23 },
-                        { "Multi Sort", level_24 },
+                        { "Multi Sort", level_24 },*/
                     }
                 },
-                { "Crazy", new Dictionary<string, CargoBotLevel>()
+                /*{ "Crazy", new Dictionary<string, CargoBotLevel>()
                     {
                         { "Divide by two", level_25 },
                         { "The Merger", level_26 },
