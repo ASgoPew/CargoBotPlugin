@@ -35,62 +35,456 @@ namespace CargoBot
 
         #region Levels
 
+        private const int empty = 0;
+        private const int right_arrow = 0;
+        private const int down_arrow = 1;
+        private const int left_arrow = 2;
+        private const int f1 = 3;
+        private const int f2 = 4;
+        private const int f3 = 5;
+        private const int f4 = 6;
+        private const int red_condition = 8;
+        private const int blue_condition = 9;
+        private const int green_condition = 10;
+        private const int yellow_condition = 11;
+        private const int no_condition = 12;
+        private const int multi_condition = 13;
+
+        private const int r = 0;
+        private const int b = 1;
+        private const int g = 2;
+        private const int y = 3;
+
         #region 1
 
-        public static CargoBotLevel level_1 = new CargoBotLevel(1, 1,
-            new List<int[]> {
-                new int[] { 0 },
-                new int[] { 0, 1 },
-                new int[] { 0, 1, 2 },
-                new int[] { 0, 1, 2, 3 },
+        public static CargoBotLevel level_1 = new CargoBotLevel("Cargo 101", 1,
+            new List<int[]>
+            {
+                new int[] { y },
                 new int[] { },
-                new int[] { 3 },
-                new int[] { },
-                new int[] { 3, 2, 3, 2, 1, 0 }
             },
             new List<int[]>
             {
-                new int[] { 0 },
-                new int[] { 0, 1 },
-                new int[] { 0, 1 },
-                new int[] { 0, 1, 2, 3 },
-                new int[] { 2 },
-                new int[] { 3 },
                 new int[] { },
-                new int[] { 3, 2, 3, 2, 1, 0 }
+                new int[] { y },
             },
-            new int[] { 1, 2, 3, 0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 },
-            (10, 8, 6),
-            "kek hint");
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4 },
+            (3, 3, 3),
+            "Down, Right, Down");
 
         #endregion
         #region 2
 
-        public static CargoBotLevel level_2 = new CargoBotLevel(2, 1,
-            new List<int[]> {
-                new int[] { 0 },
-                new int[] { 0, 1 },
-                new int[] { 0, 1, 2 },
-                new int[] { 0, 1, 2, 3 },
+        public static CargoBotLevel level_2 = new CargoBotLevel("Transporter", 1,
+            new List<int[]>
+            {
+                new int[] { y },
                 new int[] { },
-                new int[] { 3 },
                 new int[] { },
-                new int[] { 3, 2, 3, 2, 1, 0 }
+                new int[] { },
             },
             new List<int[]>
             {
-                new int[] { 0 },
-                new int[] { 0, 1 },
-                new int[] { 0, 1 },
-                new int[] { 0, 1, 2, 3, 2 },
                 new int[] { },
-                new int[] { 3 },
                 new int[] { },
-                new int[] { 3, 2, 3, 2, 1, 0 }
+                new int[] { },
+                new int[] { y },
             },
-            new int[] { 1, 2, 3, 0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 },
-            (10, 10, 6),
-            "kek hint 2");
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4 },
+            (5, 4, 4),
+            "Reuse the solution from level 1 and loop through it.\n\nThe shortest solution uses 4 registers.");
+
+        #endregion
+        #region 3 
+
+        public static CargoBotLevel level_3 = new CargoBotLevel("Re-Curses", 1,
+            new List<int[]>
+            {
+                new int[] { y, y, y, y },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { y, y, y, y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4 },
+            (10, 5, 5),
+            "Move one crate to the right, go back to the original position, and then loop.\n\nThe shortest solution uses 5 registers.");
+
+        #endregion
+        #region 4
+
+        public static CargoBotLevel level_4 = new CargoBotLevel("Inverter", 1,
+            new List<int[]>
+            {
+                new int[] { b, r, g, y },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { y, g, r, b }
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4 },
+            (15, 10, 10),
+            "Move all four blocks one spot to the right, and repeat.\n\nThe shortest solution uses 10 registers.");
+
+        #endregion
+        #region 5
+
+        public static CargoBotLevel level_5 = new CargoBotLevel("From Beneath", 1,
+            new List<int[]>
+            {
+                new int[] { y, b, b, b, b },
+                new int[] { },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, b, b, b },
+                new int[] { y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, yellow_condition, no_condition, multi_condition },
+            (8, 6, 5),
+            "Go right once if holding blue, twice if holding yellow, and left if holding none. Repeat.\n\nThe shortest solution uses 5 registers.");
+
+        #endregion
+        #region 6
+
+        public static CargoBotLevel level_6 = new CargoBotLevel("Go Left", 1,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { r, r, r },
+                new int[] { g, g, g },
+                new int[] { b, b, b },
+            },
+            new List<int[]>
+            {
+                new int[] { r, r, r },
+                new int[] { g, g, g },
+                new int[] { b, b, b },
+                new int[] { },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4 },
+            (15, 9, 9),
+            "Move each pile to the left. Repeat.\n\nThe shortest solution uses 9 registers.");
+
+        #endregion
+        #region 7
+
+        public static CargoBotLevel level_7 = new CargoBotLevel("Double Flip", 1,
+            new List<int[]>
+            {
+                new int[] { b, r, g, y },
+                new int[] { },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { },
+                new int[] { b, r, g, y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, red_condition, green_condition, yellow_condition, no_condition, multi_condition },
+            (12, 6, 5),
+            "Go right once if holding blue, twice if holding yellow, and left if holding none. Repeat.\n\nThe shortest solution uses 5 registers.");
+
+        #endregion
+        #region 8
+
+        public static CargoBotLevel level_8 = new CargoBotLevel("Go Left 2", 1,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { r, r, r },
+                new int[] { b, b, b },
+                new int[] { g, g, g },
+            },
+            new List<int[]>
+            {
+                new int[] { r, r, r },
+                new int[] { b, b, b },
+                new int[] { g, g, g },
+                new int[] { },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, red_condition, green_condition, empty, no_condition, multi_condition },
+            (8, 6, 4),
+            "Go right if holding none, and left if holding any. Repeat.\n\nThe shortest solution uses 4 registers.");
+
+        #endregion
+        #region 9
+
+        public static CargoBotLevel level_9 = new CargoBotLevel("Shuffle Sort", 2,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, y, b, y, b, y },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { b, b, b },
+                new int[] { },
+                new int[] { y, y, y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4 },
+            (15, 10, 9),
+            "Alternate left and right, and make sure to use F2 to shorten your solution.\n\nThe shortest solution uses 9 registers.");
+
+        #endregion
+        #region 10
+
+        public static CargoBotLevel level_10 = new CargoBotLevel("Go the Distance", 1,
+            new List<int[]>
+            {
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { },
+                new int[] { r, r, r, r },
+            },
+            new List<int[]>
+            {
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { r, r, r, r },
+                new int[] { },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                red_condition, yellow_condition, no_condition, multi_condition },
+            (12, 6, 4),
+            "Go right if holding none, and left if holding red. Repeat.\n\nThe shortest solution uses 4 registers.");
+
+        #endregion
+        #region 11
+
+        public static CargoBotLevel level_11 = new CargoBotLevel("Color Sort", 2,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { g, g, r, g, r, r },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { r, r, r },
+                new int[] { },
+                new int[] { g, g, g },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                red_condition, green_condition, no_condition, multi_condition },
+            (14, 10, 8),
+            "Go over each of the 3 piles and drop or pick up based on the color. When over the left pile drop if red, when over the right pile drop if green.\n\nThe shortest known solution uses 8 registers, all in F1.");
+
+        #endregion
+        #region 12
+
+        public static CargoBotLevel level_12 = new CargoBotLevel("Walking Piles", 1,
+            new List<int[]>
+            {
+                new int[] { b, b, b, b },
+                new int[] { b, b, b, b },
+                new int[] { b, b, b, b },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { b, b, b, b },
+                new int[] { b, b, b, b },
+                new int[] { b, b, b, b },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, no_condition },
+            (13, 11, 9),
+            "For a 3 star solution, move each pile 3 slots to the right, and then repeat. This method can be implemented with 10 registers.\n\nThe shortest known solution uses 9 registers (with an approach that is very specific to this configuration)");
+
+        #endregion
+        #region 13
+
+        public static CargoBotLevel level_13 = new CargoBotLevel("Repeat Inverter", 1,
+            new List<int[]>
+            {
+                new int[] { y, r, g, b },
+                new int[] { },
+                new int[] { y, r, g, b },
+                new int[] { },
+                new int[] { y, r, g, b },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, g, r, y },
+                new int[] { },
+                new int[] { b, g, r, y },
+                new int[] { },
+                new int[] { b, g, r, y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, red_condition, green_condition, yellow_condition, no_condition, multi_condition },
+            (9, 7, 5),
+            "It can be done with the usual 5 instructions and clever usage of conditional modifiers. Solutions with up to 7 instructions earn 3 stars.");
+
+        #endregion
+        #region 14
+
+        public static CargoBotLevel level_14 = new CargoBotLevel("Double Sort", 2,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { b, b, y, y },
+                new int[] { y, b, y, b },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { b, b, b, b },
+                new int[] { },
+                new int[] { },
+                new int[] { y, y, y, y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                blue_condition, yellow_condition, no_condition, multi_condition },
+            (20, 14, 11),
+            "Sort, go right, sort, go left. Repeat. Use at most 14 instructions for 3 stars.\n\nThe shortest known solution uses 11 registers.");
+
+        #endregion
+        #region 15
+
+        public static CargoBotLevel level_15 = new CargoBotLevel("Mirror", 1,
+            new List<int[]>
+            {
+                new int[] { y, y, y, y },
+                new int[] { g, g },
+                new int[] { g },
+                new int[] { g },
+                new int[] { g, g },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { g, g },
+                new int[] { g },
+                new int[] { g },
+                new int[] { g, g },
+                new int[] { y, y, y, y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                green_condition, yellow_condition, no_condition, multi_condition },
+            (9, 7, 6),
+            "Use at most 7 registers for 3 stars. There are various known solutions with 6 registers in F1, but no known solution with only 5.");
+
+        #endregion
+        #region 16
+
+        public static CargoBotLevel level_16 = new CargoBotLevel("Lay it out", 1,
+            new List<int[]>
+            {
+                new int[] { g, g, g, g, g, g },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { g },
+                new int[] { g },
+                new int[] { g },
+                new int[] { g },
+                new int[] { g },
+                new int[] { g },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                green_condition, no_condition },
+            (13, 9, 7),
+            "Move the pile one slot to the right and bring one crate back to the left.\n\nThe shortest known solution uses 7 registers.");
+
+        #endregion
+        #region 17
+
+        public static CargoBotLevel level_17 = new CargoBotLevel("The Stacker", 5,
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { y },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { },
+                new int[] { y, y, y, y, y, y },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                yellow_condition, no_condition },
+            (12, 10, 8),
+            "Go left until you find an empty slot, and then move the last yellow crate one slot to the right. Repeat.\n\nThe shortest known solution uses 8 registers.");
+
+        #endregion
+        #region 18
+
+        public static CargoBotLevel level_18 = new CargoBotLevel("Clarity", 1,
+            new List<int[]>
+            {
+                new int[] { g, r, g },
+                new int[] { g, g, g, r, g },
+                new int[] { r, g, r, g },
+                new int[] { r, g, g },
+                new int[] { },
+            },
+            new List<int[]>
+            {
+                new int[] { g, r },
+                new int[] { g, g, g, r },
+                new int[] { r, g, r },
+                new int[] { r },
+                new int[] { g, g, g, g, g },
+            },
+            new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
+                red_condition, green_condition, no_condition, multi_condition },
+            (9, 7, 6),
+            "A disguised version of Mirror.");
 
         #endregion
 
@@ -101,13 +495,13 @@ namespace CargoBot
                     {
                         { "Cargo 101", level_1},
                         { "Transporter", level_2},
-                        /*{ "Re-Curses", level_3},
+                        { "Re-Curses", level_3},
                         { "Inverter", level_4},
                         { "From Beneath", level_5},
-                        { "Go Left", level_6}*/
+                        { "Go Left", level_6}
                     }
                 },
-                /*{ "Easy", new Dictionary<string, CargoBotLevel>()
+                { "Easy", new Dictionary<string, CargoBotLevel>()
                     {
                         { "Double Flip", level_6},
                         { "Go Left 2", level_7},
@@ -127,7 +521,7 @@ namespace CargoBot
                         { "Clarity", level_17}
                     }
                 },
-                { "Hard", new Dictionary<string, CargoBotLevel>()
+                /*{ "Hard", new Dictionary<string, CargoBotLevel>()
                     {
                         { "Come Together", level_18},
                         { "Come Together 2", level_19},

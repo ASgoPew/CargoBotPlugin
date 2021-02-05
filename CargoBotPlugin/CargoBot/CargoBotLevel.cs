@@ -15,11 +15,10 @@ namespace CargoBot
         public (int, int, int) Stars;
         public string Hint;
 
-        public CargoBotLevel(int index, int crane_column, IEnumerable<IEnumerable<int>> columns,
+        public CargoBotLevel(string name, int crane_column, IEnumerable<IEnumerable<int>> columns,
             IEnumerable<IEnumerable<int>> result_columns, IEnumerable<int> tools, (int, int, int) stars, string hint)
             : base(0, 0, 0, 0)
         {
-            Index = index;
             CraneColumn = crane_column;
             Columns = columns;
             ResultColumns = result_columns;
@@ -27,7 +26,7 @@ namespace CargoBot
             Stars = stars;
             Hint = hint;
 
-            Name = $"CargoBotLevel{index}";
+            Name = $"CargoBotLevel_{name}";
         }
 
         protected override void UDBReadNative(BinaryReader br, int user)
