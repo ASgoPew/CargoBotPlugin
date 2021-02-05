@@ -13,6 +13,7 @@ namespace CargoBot
         public IEnumerable<IEnumerable<int>> ResultColumns;
         public IEnumerable<int> Tools;
         public (int, int, int) Stars;
+        public int StarsGained = 0;
         public string Hint;
 
         public CargoBotLevel(string name, int crane_column, IEnumerable<IEnumerable<int>> columns,
@@ -44,6 +45,7 @@ namespace CargoBot
                             slot.Condition = null;
                         }
 
+                StarsGained = br.ReadByte();
                 int count = br.ReadByte();
                 for (int i = 0; i < count; i++)
                 {
@@ -71,6 +73,7 @@ namespace CargoBot
             if (game == null)
                 return;
 
+            bw.Write((byte)StarsGained);
             int count = game.Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot =>
                 ((Slot)slot).Value > 0 || ((Slot)slot).Condition.HasValue));
             bw.Write((byte)count);

@@ -25,12 +25,12 @@ namespace CargoBot
             LeftBorder = left_border;
             TileType = tile;
             Box = null;
-            Reset(0);
+            Reset(1);
         }
 
         public void Reset(int column)
         {
-            Column = column;
+            Column = column - 1;
             SetXY(LeftBorder + (BoxSize + BoxDelay) * Column, 1, false);
             Position = 0;
             if (Box != null)

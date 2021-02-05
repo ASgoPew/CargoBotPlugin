@@ -36,13 +36,13 @@ namespace CargoBot
         #region Levels
 
         private const int empty = 0;
-        private const int right_arrow = 0;
-        private const int down_arrow = 1;
-        private const int left_arrow = 2;
-        private const int f1 = 3;
-        private const int f2 = 4;
-        private const int f3 = 5;
-        private const int f4 = 6;
+        private const int right_arrow = 1;
+        private const int down_arrow = 2;
+        private const int left_arrow = 3;
+        private const int f1 = 4;
+        private const int f2 = 5;
+        private const int f3 = 6;
+        private const int f4 = 7;
         private const int red_condition = 8;
         private const int blue_condition = 9;
         private const int green_condition = 10;
@@ -493,62 +493,62 @@ namespace CargoBot
             {
                 { "Tutorial", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Cargo 101", level_1},
-                        { "Transporter", level_2},
-                        { "Re-Curses", level_3},
-                        { "Inverter", level_4},
-                        { "From Beneath", level_5},
-                        { "Go Left", level_6}
+                        { "Cargo 101", level_1 },
+                        { "Transporter", level_2 },
+                        { "Re-Curses", level_3 },
+                        { "Inverter", level_4 },
+                        { "From Beneath", level_5 },
+                        { "Go Left", level_6 },
                     }
                 },
                 { "Easy", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Double Flip", level_6},
-                        { "Go Left 2", level_7},
-                        { "Shuffle Sort", level_8},
-                        { "Go the Distance", level_9},
-                        { "Color Sort", level_10},
-                        { "Walking Piles", level_11}
+                        { "Double Flip", level_7 },
+                        { "Go Left 2", level_8 },
+                        { "Shuffle Sort", level_9 },
+                        { "Go the Distance", level_10 },
+                        { "Color Sort", level_11 },
+                        { "Walking Piles", level_12 },
                     }
                 },
                 { "Medium", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Repeat Inverter", level_12},
-                        { "Double Sort", level_13},
-                        { "Mirror", level_14},
-                        { "Lay it out", level_15},
-                        { "The Stacker", level_16},
-                        { "Clarity", level_17}
+                        { "Repeat Inverter", level_13 },
+                        { "Double Sort", level_14 },
+                        { "Mirror", level_15 },
+                        { "Lay it out", level_16 },
+                        { "The Stacker", level_17 },
+                        { "Clarity", level_18 },
                     }
                 },
                 /*{ "Hard", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Come Together", level_18},
-                        { "Come Together 2", level_19},
-                        { "Up The Greens", level_20},
-                        { "Fill The Blanks", level_21},
-                        { "Count The Blues", level_22},
-                        { "Multi Sort", level_23}
+                        { "Come Together", level_19 },
+                        { "Come Together 2", level_20 },
+                        { "Up The Greens", level_21 },
+                        { "Fill The Blanks", level_22 },
+                        { "Count The Blues", level_23 },
+                        { "Multi Sort", level_24 },
                     }
                 },
                 { "Crazy", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Divide by two", level_24},
-                        { "The Merger", level_25},
-                        { "Even the Odds", level_26},
-                        { "Genetic Code", level_27},
-                        { "Multi Sort 2", level_28},
-                        { "The Swap", level_29}
+                        { "Divide by two", level_25 },
+                        { "The Merger", level_26 },
+                        { "Even the Odds", level_27 },
+                        { "Genetic Code", level_28 },
+                        { "Multi Sort 2", level_29 },
+                        { "The Swap", level_30 },
                     }
                 },
                 { "Impossible", new Dictionary<string, CargoBotLevel>()
                     {
-                        { "Restoring Order", level_30},
-                        { "Changing  Places", level_31},
-                        { "Palette Swap", level_32},
-                        { "Mirror 2", level_33},
-                        { "Changing Places 2", level_34},
-                        { "Vertical Sort", level_35}
+                        { "Restoring Order", level_31 },
+                        { "Changing  Places", level_32 },
+                        { "Palette Swap", level_33 },
+                        { "Mirror 2", level_34 },
+                        { "Changing Places 2", level_35 },
+                        { "Vertical Sort", level_36 },
                     }
                 }*/
             };

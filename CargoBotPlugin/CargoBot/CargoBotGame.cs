@@ -177,7 +177,9 @@ namespace CargoBot
                 {
 					(int x, int xx, int xxx) = Level.Stars;
 					int count = Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot => ((Slot)slot).Value > 0));
-					int stars = count <= xxx ? 3 : (count <= xx ? 2 : count <= x ? 1 : 0);
+					int stars = count <= xxx ? 3 : (count <= xx ? 2 : 1);
+					Level.StarsGained = stars;
+					Level.UDBWrite(User);
 					Player.SendSuccessMessage($"You won the game. You have achieved [c/ff0000:{stars}] stars.");
 					Player.Firework(stars);
                 }
