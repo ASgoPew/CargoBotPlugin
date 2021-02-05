@@ -82,7 +82,8 @@ namespace CargoBot
 					{
 						tile.active(true);
 						tile.inActive(true);
-						tile.type = TileID.DiamondGemspark;
+						tile.type = TileID.DiamondGemsparkOff;
+						tile.color(PaintID2.Shadow);
 						if (Value == 1 && (x == 2 && y == 0 || x == 3 && y == 1))
 							tile.slope((byte)1);
 						else if (Value == 3 && (x == 1 && y == 0 || x == 0 && y == 1))
@@ -106,7 +107,7 @@ namespace CargoBot
 					else if (Value >= 8 && Value < 12 && y > 0 && y < 3)
 						tile.wallColor((byte)ConditionColors[Value - 8]);
 					else if (Value == 12 && y > 0 && y < 3)
-						tile.wallColor((byte)PaintID2.Black);
+						tile.wall = (ushort)160;
 					else if (Value == 13 && y > 0 && y < 3)
 						tile.wallColor((byte)ConditionColors[x]);
 				}

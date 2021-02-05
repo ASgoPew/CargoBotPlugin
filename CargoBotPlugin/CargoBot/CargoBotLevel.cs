@@ -142,10 +142,14 @@ namespace CargoBot
 
         public void LoadTools(CargoBotGame game)
         {
+            var toolbox = game.Toolbox;
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
+                    ((Slot)toolbox[i, j]).Value = 0;
             for (int i = 0; i < Tools.Count(); i++)
             {
                 var tool = Tools.ElementAt(i);
-                var slot = game.Toolbox[i % 4, i / 4];
+                var slot = toolbox[i % 4, i / 4];
                 ((Slot)slot).Value = tool;
             }
         }

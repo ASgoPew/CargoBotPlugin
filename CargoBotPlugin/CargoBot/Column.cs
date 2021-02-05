@@ -10,10 +10,10 @@ namespace CargoBot
         public int BoxSize { get; set; }
         public List<Box> Boxes { get; set; } = new List<Box>();
 
-        public Column(int x, int y, int max_boxes, int box_size, UIStyle style)
-            : base(x, y, box_size, box_size * max_boxes, null, style)
+        public Column(int x, int y, int maxBoxes, int boxSize, UIStyle style)
+            : base(x, y, boxSize, boxSize * maxBoxes, null, style)
         {
-            BoxSize = box_size;
+            BoxSize = boxSize;
             SetupLayout(Alignment.Down, Direction.Up, Side.Left, null, 0, false);
         }
 

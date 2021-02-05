@@ -3,9 +3,9 @@ using TerrariaUI.Base;
 
 namespace CargoBot
 {
-    public class ToolBox : VisualObject
+    public class Toolbox : VisualObject
     {
-        public ToolBox(int x, int y, int columns, int lines)
+        public Toolbox(int x, int y, int columns, int lines)
             : base(x, y, 4 * columns, 4 * lines, new UIConfiguration() { UseBegin = false })
         {
             SetupGrid(Enumerable.Repeat(new Absolute(4), columns), Enumerable.Repeat(new Absolute(4), lines));

@@ -5,6 +5,9 @@ namespace CargoBot
 {
     public class Crane : VisualObject
     {
+        public CargoBotGame Game => GetAncestor<CargoBotGame>();
+        public Field Field => GetAncestor<Field>();
+
         public int Column;
         public int Position;
         public int MaxColumns;
@@ -24,14 +27,14 @@ namespace CargoBot
             BoxDelay = box_delay;
             LeftBorder = left_border;
             TileType = tile;
+            Position = 0;
             Box = null;
-            Reset(1);
         }
 
         public void Reset(int column)
         {
             Column = column - 1;
-            SetXY(LeftBorder + (BoxSize + BoxDelay) * Column, 1, false);
+            SetXY(Field.ColumnsX + (BoxSize + BoxDelay) * Column, 1, false);
             Position = 0;
             if (Box != null)
                 Remove(Box);
@@ -39,7 +42,7 @@ namespace CargoBot
         }
 
         public void GameOver() =>
-            GetAncestor<CargoBotGame>().EndGame(false);
+            Game.EndGame(false);
 
         protected override (int, int) GetSizeNative() =>
             (4, Position + BoxSize + 2);
@@ -93,7 +96,7 @@ namespace CargoBot
         }
 
         public Column GetColumn() =>
-            GetAncestor<Field>().Columns[Column];
+            Field.Columns[Column];
 
         public int GetMaxPosition() =>
             (MaxBoxes - GetColumn().Count() + 1) * BoxSize + 1;
@@ -156,7 +159,7 @@ namespace CargoBot
 
 	    public void MoveRight()
         {
-		    if (Column == MaxColumns - 1)
+		    if (Column == Field.ColumnsCount - 1)
             {
                 GameOver();
                 return;

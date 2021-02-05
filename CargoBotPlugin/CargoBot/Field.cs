@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
 
@@ -6,37 +7,58 @@ namespace CargoBot
 {
     public class Field : VisualObject
 	{
+		public int MaxColumns;
+		public int MaxBoxes;
+		public int BoxSize;
+		public int BoxDelay;
+		public int LeftBorder;
+		public int RightBorder;
+
+		public int ColumnsCount;
+		public int ColumnsX;
+		public int ResultColumnsX;
+
 		public int Divider;
 		public ushort TileType;
-		public byte TileColor;
+		public byte BorderTileColor;
 		public Crane Crane;
 		public List<Column> Columns;
 		public List<Column> ResultColumns;
 		public List<(int, int)> Border;
 
-		public Field(int x, int y, int max_columns, int max_boxes, int box_size, int box_delay,
-			int left_border, int right_border, ushort tile, byte tile_color, UIStyle style)
-			: base(x, y, max_columns * (box_size + 1) + (max_columns - 1) * (box_delay + 1) + 3 +
-				  2 * left_border + 2 * right_border,
-				  max_boxes * box_size + box_size + 5, null, style)
+		public CargoBotGame Game => GetAncestor<CargoBotGame>();
+
+		public Field(int x, int y, int maxColumns, int maxBoxes, int boxSize, int boxDelay,
+			int leftBorder, int rightBorder, ushort tile, byte borderTileColor, UIStyle style)
+			: base(x, y, maxColumns * (boxSize + 1) + (maxColumns - 1) * (boxDelay + 1) + 3 +
+				  2 * leftBorder + 2 * rightBorder,
+				  maxBoxes * boxSize + boxSize + 5, null, style)
 		{
-			Divider = 1 + 2 * left_border + max_columns * box_size + (max_columns - 1) * box_delay;
+			MaxColumns = maxColumns;
+			MaxBoxes = maxBoxes;
+			BoxSize = boxSize;
+			BoxDelay = boxDelay;
+			LeftBorder = leftBorder;
+			RightBorder = rightBorder;
+
+			Divider = 1 + 2 * LeftBorder + MaxColumns * BoxSize + (MaxColumns - 1) * BoxDelay;
 			TileType = tile;
-			TileColor = tile_color;
+			BorderTileColor = borderTileColor;
 
-			var crane_style = new UIStyle() { Wall = Style.Wall, WallColor = Style.WallColor, TileColor = PaintID2.Brown };
-			Crane = Add(new Crane(0, 0, max_columns, max_boxes, box_size, box_delay, left_border, tile, crane_style));
+			ColumnsX = 1 + LeftBorder;
+			var craneStyle = new UIStyle() { Wall = Style.Wall, WallColor = Style.WallColor, TileColor = PaintID2.Brown };
+			Crane = Add(new Crane(0, 0, MaxColumns, MaxBoxes, BoxSize, BoxDelay, LeftBorder, tile, craneStyle));
 
-			var column_style = new UIStyle() { Wall = Style.Wall, WallColor = Style.WallColor };
+			var columnStyle = new UIStyle() { Wall = Style.Wall, WallColor = Style.WallColor };
 			Columns = new List<Column>();
-			for (int i = 0; i < max_columns; i++)
-				Columns.Add(Add(new Column(1 + left_border + i * (box_size + box_delay), 4 + box_size,
-					max_boxes, box_size, column_style)));
+			for (int i = 0; i < MaxColumns; i++)
+				Columns.Add(Add(new Column(1 + LeftBorder + i * (BoxSize + BoxDelay),
+					Height - 1 - MaxBoxes * BoxSize, MaxBoxes, BoxSize, columnStyle)));
 			ResultColumns = new List<Column>();
-			for (int i = 0; i < max_columns; i++)
-				ResultColumns.Add(Add(new Column(1 + 2 * left_border + right_border + max_columns * box_size +
-					(max_columns - 1) * box_delay + 1 + 2 * i,
-					Height - 1 - max_boxes, max_boxes, 1, column_style)));
+			for (int i = 0; i < MaxColumns; i++)
+				ResultColumns.Add(Add(new Column(1 + 2 * LeftBorder + RightBorder + MaxColumns * BoxSize +
+					(MaxColumns - 1) * BoxDelay + 1 + 2 * i,
+					Height - 1 - MaxBoxes * 1, MaxBoxes, 1, columnStyle)));
 
 			Border = new List<(int, int)>();
 			for (x = 0; x < Width; x++)
@@ -53,10 +75,55 @@ namespace CargoBot
 			DrawWithSection = true;
 		}
 
-		protected override void ApplyThisNative()
+        protected override void UpdateThisNative()
+        {
+            base.UpdateThisNative();
+
+			if (Game.Level == null)
+			{
+
+				return;
+			}
+
+			ColumnsCount = Game.Level.Columns.Count();
+			int space = MaxColumns * BoxSize + (MaxColumns - 1) * BoxDelay;
+			ColumnsX = 1 + LeftBorder + (space - (ColumnsCount * BoxSize + (ColumnsCount - 1) * BoxDelay)) / 2;
+			int resultSpace = MaxColumns * 1 + (MaxColumns - 1) * 1;
+			ResultColumnsX = 1 + LeftBorder * 2 + space + 1 + RightBorder +
+				(resultSpace - (ColumnsCount * 1 + (ColumnsCount - 1) * 1)) / 2;
+
+			Crane.SetXY(ColumnsX - 1, 1, false);
+
+			int x = ColumnsX;
+			int y = Height - 1 - MaxBoxes * BoxSize;
+			for (int i = 0; i < MaxColumns; i++)
+				if (i < ColumnsCount)
+				{
+					Columns[i].Enable(false);
+					Columns[i].SetXY(x, y, false);
+					x += BoxSize + BoxDelay;
+				}
+				else
+					Columns[i].Disable(false);
+
+			x = ResultColumnsX;
+			y = Height - 1 - MaxBoxes * 1;
+			for (int i = 0; i < MaxColumns; i++)
+				if (i < ColumnsCount)
+				{
+					ResultColumns[i].Enable(false);
+					ResultColumns[i].SetXY(x, y, false);
+					x += 1 + 1;
+				}
+				else
+					ResultColumns[i].Disable(false);
+		}
+
+        protected override void ApplyThisNative()
 		{
 			base.ApplyThisNative();
 
+			// Draw border of tiles
 			foreach (var point in Border)
 			{
 				var tile = Tile(point.Item1, point.Item2);
@@ -64,8 +131,25 @@ namespace CargoBot
 					continue;
 				tile.active(true);
 				tile.type = TileType;
-				tile.color(TileColor);
+				tile.color(BorderTileColor);
 				tile.inActive(true);
+			}
+
+			// Mark places for box columns
+			int x = ColumnsX;
+			int y = Height - 1;
+			byte color = PaintID2.White;
+			for (int i = 0; i < ColumnsCount; i++)
+			{
+				for (int j = 0; j < BoxSize; j++)
+					Tile(x + j, y)?.color(color);
+				x += BoxSize + BoxDelay;
+			}
+			x = ResultColumnsX;
+			for (int i = 0; i < ColumnsCount; i++)
+			{
+				Tile(x, y)?.color(color);
+				x += 2;
 			}
 		}
 
@@ -74,11 +158,11 @@ namespace CargoBot
 			for (int i = 0; i < Columns.Count; i++)
 			{
 				var column = Columns[i];
-				var result_column = ResultColumns[i];
-				if (column.Boxes.Count != result_column.Boxes.Count)
+				var resultColumn = ResultColumns[i];
+				if (column.Boxes.Count != resultColumn.Boxes.Count)
 					return false;
 				for (int j = 0; j < column.Boxes.Count; j++)
-					if (column.Boxes[j].Color != result_column.Boxes[j].Color)
+					if (column.Boxes[j].Color != resultColumn.Boxes[j].Color)
 						return false;
 			}
 			return true;

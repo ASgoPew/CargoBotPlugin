@@ -23,12 +23,9 @@ namespace CargoBot
 
 		public Field Field;
 		public List<SlotLine> Lines;
-		public Label ToolboxLabel;
-		public ToolBox Toolbox;
-		public Button RunButton;
-		public Button HintButton;
+		public Label StarsCountLabel;
+		public Toolbox Toolbox;
 		public Checkbox SpeedCheckbox;
-		public Button ExitButton;
 		public bool Running;
 		public int RunningIndex = 0;
 		public int RunLine;
@@ -59,14 +56,17 @@ namespace CargoBot
 			for (int i = 0; i < 4; i++)
 				Lines.Add(Add(new SlotLine(1, Field.Height + 4 + i * 6, i, i < 3 ? 8 : 5)));
 
-			ToolboxLabel = Add(new Label(39, 21, 16, 2, "toolbox"));
-			Toolbox = Add(new ToolBox(39, 24, 4, 4));
+			Add(new Label(1, 21, 10, 2, "stars"));
+			StarsCountLabel = Add(new Label(12, 21, 2, 2, "0", new LabelStyle() { WallColor = PaintID2.DeepRed }));
 
-			RunButton = Add(new Button(27, 42, 8, 4, "run", null,
+			Add(new Label(39, 21, 16, 2, "toolbox"));
+			Toolbox = Add(new Toolbox(39, 24, 4, 4));
+
+			Add(new Button(27, 42, 8, 4, "run", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156 },
 				(self, t) => Run()));
 
-			HintButton = Add(new Button(36, 42, 10, 4, "hint", null,
+			Add(new Button(36, 42, 10, 4, "hint", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.Gray },
 				(self, t) => t.Player().SendInfoMessage($"Hint: {Level.Hint}")));
 
@@ -74,7 +74,7 @@ namespace CargoBot
 				{ Wall = 156, WallColor = PaintID2.Gray, CheckedColor = PaintID2.DeepOrange },
 				new Input<bool>(false, false, (self, value, player) => RunDelay = value ? FastDelay : SlowDelay)));
 
-			ExitButton = Add(new Button(51, 42, 4, 4, "x", null,
+			Add(new Button(51, 42, 4, 4, "x", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.DeepRed },
 				(self, t) => Stop()));
 
@@ -109,7 +109,7 @@ namespace CargoBot
 				|| touch.Player().HasPermission("TUI.control");
         }
 
-        public void Start(CargoBotLevel level, TSPlayer player, int user)
+		public void Start(CargoBotLevel level, TSPlayer player, int user)
 		{
 			Player = player;
 			User = user;
@@ -119,6 +119,8 @@ namespace CargoBot
 			Level = level;
 			CargoBotPlugin.UserSaver.UDBRead(User);
 			Level.UDBRead(User);
+			Field.Update();
+			UpdateStarsCount(false);
 			Level.LoadStatic(this);
 
 			GetAncestor<Panel>().Summon(this);
@@ -178,8 +180,11 @@ namespace CargoBot
 					(int x, int xx, int xxx) = Level.Stars;
 					int count = Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot => ((Slot)slot).Value > 0));
 					int stars = count <= xxx ? 3 : (count <= xx ? 2 : 1);
+					bool updateStars = true;// stars > Level.StarsGained;
 					Level.StarsGained = stars;
 					Level.UDBWrite(User);
+					if (updateStars)
+						UpdateStarsCount(true);
 					Player.SendSuccessMessage($"You won the game. You have achieved [c/ff0000:{stars}] stars.");
 					Player.Firework(stars);
                 }
@@ -205,6 +210,32 @@ namespace CargoBot
 					}
                 }
 			});
+		}
+
+		private void UpdateStarsCount(bool draw)
+        {
+			int count = Level.StarsGained;
+			if (StarsCountLabel.GetText() != count.ToString())
+            {
+				StarsCountLabel.SetText(count.ToString());
+				switch (count)
+                {
+					case 0:
+						StarsCountLabel.Style.WallColor = PaintID2.DeepRed;
+						break;
+					case 1:
+						StarsCountLabel.Style.WallColor = PaintID2.DeepOrange;
+						break;
+					case 2:
+						StarsCountLabel.Style.WallColor = PaintID2.DeepYellow;
+						break;
+					case 3:
+						StarsCountLabel.Style.WallColor = PaintID2.DeepGreen;
+						break;
+                }
+				if (draw)
+					StarsCountLabel.Update().Apply().Draw();
+            }
 		}
 
 		public void Run()
@@ -256,9 +287,14 @@ namespace CargoBot
 
 		public int? PullAction()
 		{
-			Slot slot = Lines[RunLine].Slots[RunSlot];
+			SlotLine line = Lines[RunLine];
+			Slot slot = line.Slots[RunSlot];
 			while (slot.Value == 0)
-				slot = Lines[RunLine].Slots[++RunSlot];
+            {
+				if (RunSlot + 1 >= line.Slots.Count)
+					return null;
+				slot = line.Slots[++RunSlot];
+            }
 
 			// Disabling old slot selection
 			OldSlot.Style.WallColor = null;

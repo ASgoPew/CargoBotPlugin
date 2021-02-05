@@ -68,7 +68,7 @@
     <Compile Include="CargoBot\Field.cs" />
     <Compile Include="CargoBot\Slot.cs" />
     <Compile Include="CargoBot\SlotLine.cs" />
-    <Compile Include="CargoBot\ToolBox.cs" />
+    <Compile Include="CargoBot\Toolbox.cs" />
     <Compile Include="CargoBot\UserSaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
