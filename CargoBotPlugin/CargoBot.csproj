@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CargoBotApplication.cs" />
     <Compile Include="CargoBot\CargoBotGame.cs" />
     <Compile Include="CargoBot\CargoBotLevel.cs" />
     <Compile Include="CargoBotPlugin.cs" />

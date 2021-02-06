@@ -25,7 +25,7 @@ namespace CargoBot
 
         public const int MaxInstances = 255;
         internal static UserSaver UserSaver = new UserSaver();
-        public static Application Application;
+        public static ApplicationType ApplicationType;
 
         public CargoBotPlugin(Main game)
             : base(game)
@@ -1159,21 +1159,21 @@ namespace CargoBot
 
         public override void Initialize()
         {
-            ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
-            PlayerHooks.PlayerLogout += OnPlayerLogout;
+            //ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
+            //PlayerHooks.PlayerLogout += OnPlayerLogout;
 
             Commands.ChatCommands.AddRange(ChatCommands);
 
-            Application = new Application("cargobot", CreateGameInstance);
-            TUI.RegisterApplication(Application);
+            ApplicationType = new ApplicationType("cargobot", (name) => new CargoBotApplication(name));
+            TUI.RegisterApplication(ApplicationType);
         }
 
-        public static IEnumerable<CargoBotGame> Games => Application.Instances.Values
-            .Select(instance => (CargoBotGame)instance["game"]);
+        public static IEnumerable<CargoBotGame> Games => ApplicationType.IterateInstances
+            .Select(instance => ((CargoBotApplication)instance.Value).Game);
 
         public static CargoBotGame GameByUser(int user) => Games.Where(game => game.User == user).FirstOrDefault();
 
-        private void OnServerLeave(LeaveEventArgs args)
+        /*private void OnServerLeave(LeaveEventArgs args)
         {
             foreach (CargoBotGame game in Games)
                 if (game.Playing && game.Player.Index == args.Who)
@@ -1185,75 +1185,19 @@ namespace CargoBot
             foreach (CargoBotGame game in Games)
                 if (game.Playing && game.Player.Index == args.Player.Index)
                     game.Stop();
-        }
+        }*/
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                ServerApi.Hooks.ServerLeave.Deregister(this, OnServerLeave);
-                PlayerHooks.PlayerLogout -= OnPlayerLogout;
+                //ServerApi.Hooks.ServerLeave.Deregister(this, OnServerLeave);
+                //PlayerHooks.PlayerLogout -= OnPlayerLogout;
 
                 foreach (Command cmd in ChatCommands)
                     Commands.ChatCommands.Remove(cmd);
             }
             base.Dispose(disposing);
-        }
-
-        public static Panel CreateGameInstance(string name)
-        {
-            int w = 20;
-            int h = 4;
-
-            Panel cargopanel = new Panel(name, 0, 0, w, h,
-                style: new PanelStyle() { SavePosition = true, SaveSize = false, SaveEnabled = true },
-                provider: FakeProviderAPI.CreateTileProvider(name, 0, 0, w, h));
-
-            Button summon_button = cargopanel.Add(new Button(0, 0, w, h, "cargobot", null,
-                new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.None, Wall = 155 }));
-
-            Menu cargomenu1 = cargopanel.Add(new Menu(0, 0, Levels.Keys.Append("back"),
-                new ButtonStyle() { Wall = 154, WallColor = PaintID2.Gray },
-                new ButtonStyle() { Wall = 156, WallColor = PaintID2.Gray },
-                "Select pack", new LabelStyle() { Wall = 155, WallColor = PaintID2.Gray },
-                new Input<string>(null, null))
-            ).Disable(false) as Menu;
-
-            CargoBotGame cargoBot = cargopanel.Add(new CargoBotGame(0, 0));
-            cargoBot.Disable(false);
-            cargopanel["game"] = cargoBot;
-
-            Dictionary<string, Menu> menus = new Dictionary<string, Menu>();
-            foreach (string pack in Levels.Keys)
-                menus[pack] = cargopanel.Add(
-                    new Menu(0, 0, Levels[pack].Keys.Append("back"),
-                    new ButtonStyle() { Wall = 154, WallColor = PaintID2.Gray },
-                    new ButtonStyle() { Wall = 156, WallColor = PaintID2.Gray },
-                    "Select level", new LabelStyle() { Wall = 155, WallColor = PaintID2.Gray },
-                    new Input<string>(null, null, (self, value, playerIndex) =>
-                    {
-                        TSPlayer player = TShock.Players[playerIndex];
-                        if (value == "back")
-                            cargopanel.Unsummon();
-                        else if (!(player.Account is UserAccount account2))
-                            player.SendErrorMessage("You have to be logged in to play this game.");
-                        else if (Games.Any(pair => pair.Playing && pair.User == account2.ID))
-                            player.SendErrorMessage("You are already playing this game.");
-                        else
-                            cargoBot.Start(Levels[pack][value], player, account2.ID);
-                    }))
-                ).Disable(false) as Menu;
-
-            summon_button.Callback = (self, t) => cargopanel.Summon(cargomenu1);
-            cargomenu1.Input.Callback = (self, value, player) =>
-            {
-                if (value == "back")
-                    cargopanel.Unsummon();
-                else
-                    cargopanel.Summon(menus[value]);
-            };
-
-            return cargopanel;
         }
     }
 }

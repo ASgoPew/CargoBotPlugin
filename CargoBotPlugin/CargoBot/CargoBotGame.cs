@@ -42,6 +42,10 @@ namespace CargoBot
 		public bool ExitRequested = false;
 
 		public bool Fast => RunDelay == FastDelay;
+		public void StartPlayerSession(int playerIndex, int timeout) =>
+			GetAncestor<CargoBotApplication>().StartPlayerSession(new int[] { playerIndex }, timeout);
+		public void EndPlayerSession() =>
+			GetAncestor<CargoBotApplication>().EndPlayerSession();
 
 		public CargoBotGame(int x, int y)
 			: base(x, y, 0, 0, new UIConfiguration() { UseEnd = true, BeginRequire = false },
@@ -76,7 +80,7 @@ namespace CargoBot
 
 			Add(new Button(51, 1 + Field.Height + 4 + Toolbox.Height + 2, 4, 4, "x", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.DeepRed },
-				(self, t) => Stop()));
+				(self, t) => EndPlayerSession()));
 
 			Playing = false;
 			User = -1;
@@ -114,6 +118,7 @@ namespace CargoBot
 		public void Start(CargoBotLevel level, TSPlayer player, int user)
 		{
 			Player = player;
+			StartPlayerSession(player.Index, SessionLength / 1000);
 			User = user;
 
 			Playing = true;
@@ -128,22 +133,21 @@ namespace CargoBot
 			GetAncestor<Panel>().Summon(this);
 			Player.SendInfoMessage($"You session has begun. You have {SessionLength/60000} minutes.");
 
-			int sessionIndex = SessionIndex;
+			/*int sessionIndex = SessionIndex;
 			Task.Delay(SessionLength).ContinueWith(_ =>
 			{
 				if (Running)
 					ExitRequested = true;
 				else
 					EndSession(sessionIndex);
-			});
+			});*/
 		}
-
-		public void EndSession(int sessionIndex)
-        {
+		/*public void EndSession(int sessionIndex)
+		{
 			if (sessionIndex != SessionIndex || !Playing)
 				return;
 			Stop();
-        }
+		}*/
 
 		public void Stop()
 		{
@@ -202,7 +206,7 @@ namespace CargoBot
 				if (Playing && SessionIndex == sessionIndex)
                 {
 					if (ExitRequested)
-						Stop();
+						EndPlayerSession();
 					else if (WaitingForReset && RunningIndex == playingIndex)
 					{
 						Level.UDBWrite(User);
