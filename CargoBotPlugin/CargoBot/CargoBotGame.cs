@@ -127,6 +127,7 @@ namespace CargoBot
 			Level = level;
 			CargoBotPlugin.UserSaver.UDBRead(User);
 			Level.UDBRead(User);
+			Level.UsedSlots = Leaderboard.GetLeaderboardValue(Level.LevelName, User) ?? Int32.MaxValue;
 			Field.Update();
 			UpdateStarsCount(false);
 			Level.LoadStatic(this);
@@ -185,11 +186,17 @@ namespace CargoBot
 				if (win.Value)
                 {
 					(int x, int xx, int xxx) = Level.Stars;
-					int count = Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot => ((Slot)slot).Value > 0));
-					int stars = count <= xxx ? 3 : (count <= xx ? 2 : 1);
+					int usedSlots = Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot => ((Slot)slot).Value > 0));
+					int stars = usedSlots <= xxx ? 3 : (usedSlots <= xx ? 2 : 1);
 					bool updateStars = true;// stars > Level.StarsGained;
 					Level.StarsGained = stars;
 					Level.UDBWrite(User);
+					Console.WriteLine($"slots was: {Level.UsedSlots}, slots now: {usedSlots}");
+					if (usedSlots < Level.UsedSlots)
+                    {
+						Level.UsedSlots = usedSlots;
+						Leaderboard.SetLeaderboardValue(Level.LevelName, User, usedSlots);
+                    }
 					if (updateStars)
 						UpdateStarsCount(true);
 					Player.SendSuccessMessage($"You won the game. You have achieved [c/ff0000:{stars}] stars.");
@@ -255,9 +262,10 @@ namespace CargoBot
 					Level.LoadField(this);
 				}
 				var app = GetAncestor<CargoBotApplication>();
-				var ratingList = new RatingList(0, 0, 40, 60, Level.LevelName);
-				ratingList[0, 2] = new Button(0, 0, 0, 0, "back", null, new ButtonStyle() { Wall = 155 }, (self, touch) => app.Unsummon());
-				app.Summon(ratingList);
+				var leaderboard = new Leaderboard(0, 0, 40, 60, Level.LevelName);
+				leaderboard.LoadDBData();
+				leaderboard.AddFooter(new Button(0, 0, 0, 4, "back", null, new ButtonStyle() { Wall = 155 }, (self, touch) => app.Unsummon()));
+				app.Summon(leaderboard);
             }
         }
 

@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TerrariaUI;
 using TerrariaUI.Base;
+using TerrariaUI.Hooks.Args;
 
 namespace CargoBot
 {
@@ -15,6 +18,7 @@ namespace CargoBot
         public IEnumerable<int> Tools;
         public (int, int, int) Stars;
         public int StarsGained = 0;
+        public int UsedSlots = Int32.MaxValue;
         public string Hint;
 
         public CargoBotLevel(string name, int crane_column, IEnumerable<IEnumerable<int>> columns,
@@ -37,35 +41,50 @@ namespace CargoBot
             CargoBotGame game = CargoBotPlugin.GameByUser(user);
             if (game == null)
                 return;
+
+            foreach (var line in game.Lines)
+                foreach (var _slot in line.ChildrenFromBottom)
+                    if (_slot is Slot slot)
+                    {
+                        slot.Value = 0;
+                        slot.Condition = null;
+                    }
+            int count;
             try
             {
-                foreach (var line in game.Lines)
-                    foreach (var _slot in line.ChildrenFromBottom)
-                        if (_slot is Slot slot)
-                        {
-                            slot.Value = 0;
-                            slot.Condition = null;
-                        }
-
                 StarsGained = br.ReadByte();
-                int count = br.ReadByte();
-                for (int i = 0; i < count; i++)
-                {
-                    int lineIndex = br.ReadByte();
-                    int slotIndex = br.ReadByte();
-                    int value = br.ReadByte();
-                    int condition = br.ReadByte();
-                    Slot slot = game.Lines[lineIndex].GetChild(slotIndex + 1) as Slot;
-                    slot.Value = value;
-                    slot.Condition = condition;
-                    if (slot.Condition == 255)
-                        slot.Condition = null;
-                }
+                count = br.ReadByte();
             }
-            catch
+            catch (EndOfStreamException)
             {
+                TUI.Log("CargoBotLevel invalid database data", LogType.Warning);
                 ClearSlots(game);
                 UDBWrite(user);
+                return;
+            }
+            for (int i = 0; i < count; i++)
+            {
+                int lineIndex, slotIndex, value, condition;
+                try
+                {
+                    lineIndex = br.ReadByte();
+                    slotIndex = br.ReadByte();
+                    value = br.ReadByte();
+                    condition = br.ReadByte();
+                }
+                catch (EndOfStreamException)
+                {
+                    TUI.Log("CargoBotLevel invalid database data", LogType.Warning);
+                    ClearSlots(game);
+                    UDBWrite(user);
+                    return;
+                }
+
+                Slot slot = game.Lines[lineIndex].GetChild(slotIndex + 1) as Slot;
+                slot.Value = value;
+                slot.Condition = condition;
+                if (slot.Condition == 255)
+                    slot.Condition = null;
             }
         }
 

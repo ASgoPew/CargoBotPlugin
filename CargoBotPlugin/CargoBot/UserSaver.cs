@@ -1,5 +1,7 @@
 ﻿using System.IO;
+using TerrariaUI;
 using TerrariaUI.Base;
+using TerrariaUI.Hooks.Args;
 
 namespace CargoBot
 {
@@ -13,19 +15,23 @@ namespace CargoBot
 
         protected override void UDBReadNative(BinaryReader br, int user)
         {
+            CargoBotGame game = CargoBotPlugin.GameByUser(user);
+            if (game == null)
+                return;
+
+            bool fast;
             try
             {
-                CargoBotGame game = CargoBotPlugin.GameByUser(user);
-                if (game == null)
-                    return;
-                bool fast = br.ReadBoolean();
-                game.RunDelay = fast ? CargoBotGame.FastDelay : CargoBotGame.SlowDelay;
-                game.SpeedCheckbox.SetValue(fast, false, game.Player.Index);
+                fast = br.ReadBoolean();
             }
-            catch
+            catch (EndOfStreamException)
             {
+                TUI.Log("UserSaver invalid database data", LogType.Warning);
                 UDBWrite(user);
+                return;
             }
+            game.RunDelay = fast ? CargoBotGame.FastDelay : CargoBotGame.SlowDelay;
+            game.SpeedCheckbox.SetValue(fast, false, game.Player.Index);
         }
 
         protected override void UDBWriteNative(BinaryWriter bw, int user)
