@@ -19,8 +19,6 @@ namespace CargoBot
 		public const int SessionLength = 180000;
 		public const int ResultsDelay = 3000;
 
-		private static object StaticLocker = new object();
-
 		public Field Field;
 		public List<SlotLine> Lines;
 		public Label StarsCountLabel;
@@ -62,6 +60,9 @@ namespace CargoBot
 
 			Add(new Label(1, 1 + Field.Height + 1, 10, 2, "stars"));
 			StarsCountLabel = Add(new Label(12, 1 + Field.Height + 1, 2, 2, "0", new LabelStyle() { WallColor = PaintID2.DeepRed }));
+
+			Add(new Button(21, 1 + Field.Height + 1, 12, 2, "rating", null, new ButtonStyle()
+				{ WallColor = PaintID2.Yellow, BlinkStyle = ButtonBlinkStyle.Full }, (self, touch) => ShowRating()));
 
 			Add(new Label(39, 1 + Field.Height + 1, 16, 2, "toolbox"));
 			Toolbox = Add(new Toolbox(39, 1 + Field.Height + 4, 4, 4));
@@ -244,9 +245,23 @@ namespace CargoBot
             }
 		}
 
+		public void ShowRating()
+        {
+			lock (Locker)
+            {
+				if (Running || WaitingForReset)
+                {
+					Reset();
+					Level.LoadField(this);
+				}
+				var app = GetAncestor<CargoBotApplication>();
+				app.Summon(new RatingList(0, 0, 40, 60, app.FullName));
+            }
+        }
+
 		public void Run()
 		{
-			lock (StaticLocker)
+			lock (Locker)
 				if (Running || WaitingForReset)
 				{
 					Reset();
@@ -264,7 +279,7 @@ namespace CargoBot
 
 		public void RunMove()
 		{
-			lock (StaticLocker)
+			lock (Locker)
 			{
 				if (Disposed || !Running)
 					return;

@@ -77,15 +77,15 @@ namespace CargoBot
             base.StartPlayerSessionNative();
 
             //ApplicationStyle.TrackInMotion = true;
-            ApplicationStyle.TrackAlignment = Alignment.Center;
-            ApplicationStyle.TrackingPlayer = SessionPlayers[0];
+            //ApplicationStyle.TrackAlignment = Alignment.Center;
+            //ApplicationStyle.TrackingPlayer = SessionPlayers[0];
         }
 
         protected override void EndPlayerSessionNative()
         {
             base.EndPlayerSessionNative();
 
-            ApplicationStyle.TrackingPlayer = -1;
+            //ApplicationStyle.TrackingPlayer = -1;
 
             Game.Stop();
         }
