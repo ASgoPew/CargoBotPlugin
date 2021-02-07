@@ -8,6 +8,7 @@ namespace CargoBot
     public class CargoBotLevel : VisualObject
     {
         public int Index;
+        public string LevelName;
         public int CraneColumn;
         public IEnumerable<IEnumerable<int>> Columns;
         public IEnumerable<IEnumerable<int>> ResultColumns;
@@ -27,6 +28,7 @@ namespace CargoBot
             Stars = stars;
             Hint = hint;
 
+            LevelName = name;
             Name = $"CargoBotLevel_{name}";
         }
 

@@ -255,7 +255,9 @@ namespace CargoBot
 					Level.LoadField(this);
 				}
 				var app = GetAncestor<CargoBotApplication>();
-				app.Summon(new RatingList(0, 0, 40, 60, app.FullName));
+				var ratingList = new RatingList(0, 0, 40, 60, Level.LevelName);
+				ratingList[0, 2] = new Button(0, 0, 0, 0, "back", null, new ButtonStyle() { Wall = 155 }, (self, touch) => app.Unsummon());
+				app.Summon(ratingList);
             }
         }
 
