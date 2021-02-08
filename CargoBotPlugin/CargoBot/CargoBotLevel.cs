@@ -17,17 +17,15 @@ namespace CargoBot
         public IEnumerable<IEnumerable<int>> ResultColumns;
         public IEnumerable<int> Tools;
         public (int, int, int) Stars;
-        public int StarsGained = 0;
-        public int UsedSlots = Int32.MaxValue;
         public string Hint;
 
-        public CargoBotLevel(string name, int crane_column, IEnumerable<IEnumerable<int>> columns,
-            IEnumerable<IEnumerable<int>> result_columns, IEnumerable<int> tools, (int, int, int) stars, string hint)
+        public CargoBotLevel(string name, int craneColumn, IEnumerable<IEnumerable<int>> columns,
+            IEnumerable<IEnumerable<int>> resultColumns, IEnumerable<int> tools, (int, int, int) stars, string hint)
             : base(0, 0, 0, 0)
         {
-            CraneColumn = crane_column;
+            CraneColumn = craneColumn;
             Columns = columns;
-            ResultColumns = result_columns;
+            ResultColumns = resultColumns;
             Tools = tools;
             Stars = stars;
             Hint = hint;
@@ -52,7 +50,7 @@ namespace CargoBot
             int count;
             try
             {
-                StarsGained = br.ReadByte();
+                game.StarsGained = br.ReadByte();
                 count = br.ReadByte();
             }
             catch (EndOfStreamException)
@@ -94,7 +92,7 @@ namespace CargoBot
             if (game == null)
                 return;
 
-            bw.Write((byte)StarsGained);
+            bw.Write((byte)game.StarsGained);
             int count = game.Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot =>
                 ((Slot)slot).Value > 0 || ((Slot)slot).Condition.HasValue));
             bw.Write((byte)count);

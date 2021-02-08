@@ -30,7 +30,7 @@ namespace CargoBot
                 UDBWrite(user);
                 return;
             }
-            game.RunDelay = fast ? CargoBotGame.FastDelay : CargoBotGame.SlowDelay;
+            game.Fast = fast;
             game.SpeedCheckbox.SetValue(fast, false, game.Player.Index);
         }
 
