@@ -50,7 +50,7 @@ namespace CargoBot
 				  new ContainerStyle() { Wall = 155 })
 		{
 			Field = Add(new Field(1, 1, 8, 7, 2, 2, 2, 1,
-				TileID.SlimeBlock, PaintID2.White, TileID.Cog, PaintID2.Shadow,
+				TileID.SlimeBlock, PaintID2.White, TileID.SlimeBlock, PaintID2.White,
 				new UIStyle() { Wall = 155, WallColor = PaintID2.White }));
 			Add(new VisualObject(1, Field.Height + 5, 4, 22, new UIConfiguration() { UseBegin = false },
 				new UIStyle() { Wall = WallID.SapphireGemspark }));
@@ -63,7 +63,7 @@ namespace CargoBot
 			StarsCountLabel = Add(new Label(12, 1 + Field.Height + 1, 2, 2, "0", new LabelStyle() { WallColor = PaintID2.DeepRed }));
 
 			Add(new Button(21, 1 + Field.Height + 1, 12, 2, "rating", null, new ButtonStyle()
-				{ WallColor = PaintID2.Yellow, BlinkStyle = ButtonBlinkStyle.Full }, (self, touch) => ShowRating()));
+				{ WallColor = PaintID2.DeepYellow, BlinkStyle = ButtonBlinkStyle.Full }, (self, touch) => ShowRating()));
 
 			Add(new Label(39, 1 + Field.Height + 1, 16, 2, "toolbox"));
 			Toolbox = Add(new Toolbox(39, 1 + Field.Height + 4, 4, 4));
@@ -78,7 +78,14 @@ namespace CargoBot
 
 			SpeedCheckbox = Add(new Checkbox(47, 1 + Field.Height + 4 + Toolbox.Height + 3, 2, new CheckboxStyle()
 				{ Wall = 156, WallColor = PaintID2.Gray, CheckedColor = PaintID2.DeepOrange },
-				new Input<bool>(false, false, (self, value, player) => RunDelay = value ? FastDelay : SlowDelay)));
+				new Input<bool>(false, false, (self, value, player) =>
+				{
+					RunDelay = value ? FastDelay : SlowDelay;
+					if (value)
+						Player.SendInfoMessage("Fast mode on.");
+					else
+						Player.SendInfoMessage("Fast mode off.");
+				})));
 
 			Add(new Button(51, 1 + Field.Height + 4 + Toolbox.Height + 2, 4, 4, "x", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.DeepRed },
@@ -111,7 +118,7 @@ namespace CargoBot
 						begin_slot.Apply().Draw();
 					}
 					else
-						Player.SendInfoMessage("Drag and drop an arrow box from toolbox to F1 program line (on the left)\nThen press Run to see how the game works");
+						Player.SendInfoMessage("Drag and drop an arrow box from toolbox to F1 program line (on the left)\nThen press Run to see how the game works.");
 				}
 			}
 		}

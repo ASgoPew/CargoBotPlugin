@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Terraria.ID;
 using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
 
@@ -34,7 +35,7 @@ namespace CargoBot
 			int leftBorder, int rightBorder, ushort borderTileType, byte borderTileColor, ushort boxPlaceTileType,
 			byte boxPlaceTileColor, UIStyle style)
 			: base(x, y, maxColumns * (boxSize + 1) + (maxColumns - 1) * (boxDelay + 1) + 3 +
-				  2 * leftBorder + 2 * rightBorder,
+				  2 * leftBorder + 2 * rightBorder + 1,
 				  maxBoxes * boxSize + boxSize + 5, null, style)
 		{
 			MaxColumns = maxColumns;
@@ -58,12 +59,12 @@ namespace CargoBot
 			Columns = new List<Column>();
 			for (int i = 0; i < MaxColumns; i++)
 				Columns.Add(Add(new Column(1 + LeftBorder + i * (BoxSize + BoxDelay),
-					Height - 1 - MaxBoxes * BoxSize, MaxBoxes, BoxSize, columnStyle)));
+					Height - 2 - MaxBoxes * BoxSize, MaxBoxes, BoxSize, columnStyle)));
 			ResultColumns = new List<Column>();
 			for (int i = 0; i < MaxColumns; i++)
 				ResultColumns.Add(Add(new Column(1 + 2 * LeftBorder + RightBorder + MaxColumns * BoxSize +
 					(MaxColumns - 1) * BoxDelay + 1 + 2 * i,
-					Height - 1 - MaxBoxes * 1, MaxBoxes, 1, columnStyle)));
+					Height - 2 - MaxBoxes * 1, MaxBoxes, 1, columnStyle)));
 
 			Border = new List<(int, int)>();
 			for (x = 0; x < Width; x++)
@@ -97,7 +98,7 @@ namespace CargoBot
 			Crane.SetXY(ColumnsX - 1, 1, false);
 
 			int x = ColumnsX;
-			int y = Height - 1 - MaxBoxes * BoxSize;
+			int y = Height - 2 - MaxBoxes * BoxSize;
 			for (int i = 0; i < MaxColumns; i++)
 				if (i < ColumnsCount)
 				{
@@ -109,7 +110,7 @@ namespace CargoBot
 					Columns[i].Disable(false);
 
 			x = ResultColumnsX;
-			y = Height - 1 - MaxBoxes * 1;
+			y = Height - 2 - MaxBoxes * 1;
 			for (int i = 0; i < MaxColumns; i++)
 				if (i < ColumnsCount)
 				{
@@ -137,9 +138,25 @@ namespace CargoBot
 				tile.inActive(true);
 			}
 
+			// Stop walls
+			if (ColumnsCount != MaxColumns && Game.Level != null)
+				for (int i = 1; i < Height - 1; i++)
+				{
+					var tile = Tile(ColumnsX - 3, i);
+					tile.active(true);
+					tile.inActive(true);
+					tile.type = TileID.SlimeBlock;
+					tile.color(PaintID2.DeepRed);
+					tile = Tile(ColumnsX + ColumnsCount * BoxSize + (ColumnsCount - 1) * BoxDelay + 2, i);
+					tile.active(true);
+					tile.inActive(true);
+					tile.type = TileID.SlimeBlock;
+					tile.color(PaintID2.DeepRed);
+				}
+
 			// Mark places for box columns
 			int x = ColumnsX;
-			int y = Height - 1;
+			int y = Height - 2;
 			byte color = PaintID2.White;
 			for (int i = 0; i < ColumnsCount; i++)
 			{
@@ -148,6 +165,8 @@ namespace CargoBot
 					var tile = Tile(x + j, y);
 					if (tile == null)
 						continue;
+					tile.active(true);
+					tile.inActive(true);
 					tile.type = BoxPlaceTileType;
 					tile.color(BoxPlaceTileColor);
 				}
@@ -159,6 +178,8 @@ namespace CargoBot
 				var tile = Tile(x, y);
 				if (tile == null)
 					continue;
+				tile.active(true);
+				tile.inActive(true);
 				tile.type = BoxPlaceTileType;
 				tile.color(BoxPlaceTileColor);
 				x += 2;
