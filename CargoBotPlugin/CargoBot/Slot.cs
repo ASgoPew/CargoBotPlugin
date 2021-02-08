@@ -1,7 +1,9 @@
-﻿using Terraria.ID;
+﻿using System;
+using Terraria.ID;
 using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
 using TerrariaUI.Widgets;
+using TUIPlugin;
 
 namespace CargoBot
 {
@@ -30,7 +32,7 @@ namespace CargoBot
 			: base(x, y, 4, withCondition ? 5 : 4,
 			new UIConfiguration()
 			{
-				UseEnd = withCondition,
+				UseEnd = true,
 				SessionAcquire = false,
 				UseOutsideTouches = true,
 				BeginRequire = false
@@ -146,6 +148,12 @@ namespace CargoBot
 				if (!(_begin_slot is Slot begin_slot) || begin_slot.Root != Root)
 					return;
 
+				if (begin_slot == this)
+					touch.Player().SendInfoMessage(InfoMessage(Value));
+
+				if (!WithCondition)
+					return;
+
 				if (begin_slot.WithCondition)
 				{
 					if (touch.Session.BeginTouch.Y > 0)
@@ -183,5 +191,41 @@ namespace CargoBot
 				}
 			}
 		}
+
+		public static string InfoMessage(int value)
+        {
+			switch (value)
+            {
+				case 0:
+					return "Drag and drop a few arrow boxes from toolbox to F1 program line (on the left)\nThen press RUN button to see how the game works.";
+				case 1:
+					return "After this action the crane will move one position right.";
+				case 2:
+					return "After this action the crane will place a box if it is holding one or will grab a box if it is not.";
+				case 3:
+					return "After this action the crane will move one position left.";
+				case 4:
+					return "After this action program will continue from the beginning of F1 line.";
+				case 5:
+					return "After this action program will continue from the beginning of F2 line.";
+				case 6:
+					return "After this action program will continue from the beginning of F3 line.";
+				case 7:
+					return "After this action program will continue from the beginning of F4 line.";
+				case 8:
+					return "An action with this condition will only execute if the crane is holding a red box.";
+				case 9:
+					return "An action with this condition will only execute if the crane is holding a blue box.";
+				case 10:
+					return "An action with this condition will only execute if the crane is holding a green box.";
+				case 11:
+					return "An action with this condition will only execute if the crane is holding a yellow box.";
+				case 12:
+					return "An action with this condition will only execute if the crane is not holding a box.";
+				case 13:
+					return "An action with this condition will only execute if the crane is holding any box.";
+			}
+			throw new Exception();
+        }
 	}
 }

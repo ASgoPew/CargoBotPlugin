@@ -118,7 +118,7 @@ namespace CargoBot
 						begin_slot.Apply().Draw();
 					}
 					else
-						Player.SendInfoMessage("Drag and drop an arrow box from toolbox to F1 program line (on the left)\nThen press Run to see how the game works.");
+						Player.SendInfoMessage(Slot.InfoMessage(0));
 				}
 			}
 		}
@@ -139,6 +139,7 @@ namespace CargoBot
 			SessionIndex++;
 			Level = level;
 			CargoBotPlugin.UserSaver.UDBRead(User);
+			Level.ClearSlots(this);
 			Level.UDBRead(User);
 			Level.UsedSlots = Leaderboard.GetLeaderboardValue(Level.LevelName, User) ?? Int32.MaxValue;
 			Field.Update();

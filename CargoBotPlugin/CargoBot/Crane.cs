@@ -99,7 +99,7 @@ namespace CargoBot
             Field.Columns[Column];
 
         public int GetMaxPosition() =>
-            (MaxBoxes - GetColumn().Count() + 1) * BoxSize;
+            (MaxBoxes - GetColumn().Count() + 1) * BoxSize + 1;
 
         public void AddBox(Box box)
         {

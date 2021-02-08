@@ -36,7 +36,7 @@ namespace CargoBot
 			byte boxPlaceTileColor, UIStyle style)
 			: base(x, y, maxColumns * (boxSize + 1) + (maxColumns - 1) * (boxDelay + 1) + 3 +
 				  2 * leftBorder + 2 * rightBorder + 1,
-				  maxBoxes * boxSize + boxSize + 5, null, style)
+				  maxBoxes * boxSize + boxSize + 6, null, style)
 		{
 			MaxColumns = maxColumns;
 			MaxBoxes = maxBoxes;
@@ -169,6 +169,10 @@ namespace CargoBot
 					tile.inActive(true);
 					tile.type = BoxPlaceTileType;
 					tile.color(BoxPlaceTileColor);
+					//if (j == 0)
+						//tile.slope(2);
+					//else if (j == BoxSize - 1)
+						//tile.slope(1);
 				}
 				x += BoxSize + BoxDelay;
 			}
