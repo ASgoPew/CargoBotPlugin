@@ -29,6 +29,7 @@ namespace CargoBot
 		public int RunLine;
 		public int RunSlot;
 		public int RunDelay;
+		public int TotalStars;
 		public CargoBotLevel Level;
 		public Slot OldSlot;
 		public TSPlayer Player;
@@ -40,6 +41,8 @@ namespace CargoBot
 		public bool ExitRequested = false;
 
 		public bool Fast => RunDelay == FastDelay;
+		public string LeaderboardDatabaseKey => "CargoBotGame";
+		public string LevelLeaderboardDatabaseKey => Level.LevelName;
 		public void StartPlayerSession(int playerIndex, int timeout) =>
 			GetAncestor<CargoBotApplication>().StartPlayerSession(new int[] { playerIndex }, timeout);
 		public void EndPlayerSession() =>
@@ -141,13 +144,14 @@ namespace CargoBot
 			CargoBotPlugin.UserSaver.UDBRead(User);
 			Level.ClearSlots(this);
 			Level.UDBRead(User);
-			Level.UsedSlots = Leaderboard.GetLeaderboardValue(Level.LevelName, User) ?? Int32.MaxValue;
+			Level.UsedSlots = Leaderboard.GetLeaderboardValue(LevelLeaderboardDatabaseKey, User) ?? Int32.MaxValue;
+			TotalStars = Leaderboard.GetLeaderboardValue(LeaderboardDatabaseKey, User) ?? 0;
 			Field.Update();
-			UpdateStarsCount(false);
+			UpdateStarsCount(Level.StarsGained, false);
 			Level.LoadStatic(this);
 
 			GetAncestor<Panel>().Summon(this);
-			Player.SendInfoMessage($"You session has begun. You have {SessionLength/60000} minutes.");
+			Player.SendInfoMessage($"You session has begun. You currently have {Level.StarsGained} stars for this level.{(Level.StarsGained == 3 ? "" : " Try gaining 3.")}\nYou have {SessionLength/60000} minutes.");
 		}
 
 		public void Stop()
@@ -187,18 +191,17 @@ namespace CargoBot
 					(int x, int xx, int xxx) = Level.Stars;
 					int usedSlots = Lines.Sum(slotLine => slotLine.ChildrenFromBottom.Skip(1).Count(slot => ((Slot)slot).Value > 0));
 					int stars = usedSlots <= xxx ? 3 : (usedSlots <= xx ? 2 : 1);
-					bool updateStars = true;// stars > Level.StarsGained;
-					Level.StarsGained = stars;
+					bool updateStars = stars > Level.StarsGained;
 					Level.UDBWrite(User);
 					Console.WriteLine($"slots was: {Level.UsedSlots}, slots now: {usedSlots}");
 					if (usedSlots < Level.UsedSlots)
                     {
 						Level.UsedSlots = usedSlots;
-						Leaderboard.SetLeaderboardValue(Level.LevelName, User, usedSlots);
+						Leaderboard.SetLeaderboardValue(LevelLeaderboardDatabaseKey, User, usedSlots);
                     }
 					if (updateStars)
-						UpdateStarsCount(true);
-					Player.SendSuccessMessage($"You won the game. You have achieved [c/ff0000:{stars}] stars.");
+						UpdateStarsCount(stars, true);
+					Player.SendSuccessMessage($"You won the game. You have achieved [c/ff0000:{stars}] stars for this solution.");
 					Player.Firework(stars);
                 }
 				else
@@ -225,13 +228,16 @@ namespace CargoBot
 			});
 		}
 
-		private void UpdateStarsCount(bool draw)
+		private void UpdateStarsCount(int stars, bool draw)
         {
-			int count = Level.StarsGained;
-			if (StarsCountLabel.GetText() != count.ToString())
-            {
-				StarsCountLabel.SetText(count.ToString());
-				switch (count)
+			int old = Level.StarsGained;
+			Level.StarsGained = stars;
+			if (old < stars)
+				Leaderboard.SetLeaderboardValue(LeaderboardDatabaseKey, User, TotalStars + (stars - old));
+			if (StarsCountLabel.GetText() != stars.ToString())
+			{
+				StarsCountLabel.SetText(stars.ToString());
+				switch (stars)
                 {
 					case 0:
 						StarsCountLabel.Style.WallColor = PaintID2.DeepRed;
@@ -261,7 +267,7 @@ namespace CargoBot
 					Level.LoadField(this);
 				}
 				var app = GetAncestor<CargoBotApplication>();
-				var leaderboard = new Leaderboard(0, 0, 40, 60, Level.LevelName);
+				var leaderboard = new Leaderboard(0, 0, 40, 60, LevelLeaderboardDatabaseKey);
 				leaderboard.Configuration.Custom.CanTouch = (self, touch) => touch.PlayerIndex == Player.Index;
 				leaderboard.LoadDBData();
 				leaderboard.AddFooter(new Button(0, 0, 0, 4, "back", null, new ButtonStyle() { Wall = 155 }, (self, touch) => app.Unsummon()));

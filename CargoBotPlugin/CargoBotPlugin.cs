@@ -1155,15 +1155,8 @@ namespace CargoBot
 
         #endregion
 
-        private static Command[] ChatCommands = new Command[] { };
-
         public override void Initialize()
         {
-            //ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
-            //PlayerHooks.PlayerLogout += OnPlayerLogout;
-
-            Commands.ChatCommands.AddRange(ChatCommands);
-
             ApplicationType = new ApplicationType("cargobot", (name) => new CargoBotApplication(name));
             TUI.RegisterApplication(ApplicationType);
         }
@@ -1173,29 +1166,10 @@ namespace CargoBot
 
         public static CargoBotGame GameByUser(int user) => Games.Where(game => game.User == user).FirstOrDefault();
 
-        /*private void OnServerLeave(LeaveEventArgs args)
-        {
-            foreach (CargoBotGame game in Games)
-                if (game.Playing && game.Player.Index == args.Who)
-                    game.Stop();
-        }
-
-        private void OnPlayerLogout(PlayerLogoutEventArgs args)
-        {
-            foreach (CargoBotGame game in Games)
-                if (game.Playing && game.Player.Index == args.Player.Index)
-                    game.Stop();
-        }*/
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                //ServerApi.Hooks.ServerLeave.Deregister(this, OnServerLeave);
-                //PlayerHooks.PlayerLogout -= OnPlayerLogout;
-
-                foreach (Command cmd in ChatCommands)
-                    Commands.ChatCommands.Remove(cmd);
             }
             base.Dispose(disposing);
         }

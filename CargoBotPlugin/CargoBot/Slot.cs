@@ -145,14 +145,24 @@ namespace CargoBot
 			if (touch.State == TouchState.End && !GetAncestor<CargoBotGame>().Running)
 			{
 				var _begin_slot = touch.Session.BeginTouch.Object;
-				if (!(_begin_slot is Slot begin_slot) || begin_slot.Root != Root)
+				if (!(_begin_slot is Slot begin_slot) || begin_slot.Root != Root || touch.Undo)
 					return;
 
 				if (begin_slot == this)
 					touch.Player().SendInfoMessage(InfoMessage(Value));
 
 				if (!WithCondition)
+                {
+					if (begin_slot.WithCondition)
+                    {
+						if (touch.Session.BeginTouch.Y > 0)
+							begin_slot.Value = 0;
+						else
+							begin_slot.Condition = null;
+						begin_slot.Apply().Draw();
+					}
 					return;
+                }
 
 				if (begin_slot.WithCondition)
 				{
