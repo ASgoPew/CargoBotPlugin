@@ -144,6 +144,8 @@ namespace CargoBot
 
         public void MoveUp()
         {
+            if (!Field.CalculateActive())
+                return;
             Position = 0;
             Apply();
             int old_height = Height;

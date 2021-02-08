@@ -35,7 +35,7 @@ namespace CargoBot
 			int leftBorder, int rightBorder, ushort borderTileType, byte borderTileColor, ushort boxPlaceTileType,
 			byte boxPlaceTileColor, UIStyle style)
 			: base(x, y, maxColumns * (boxSize + 1) + (maxColumns - 1) * (boxDelay + 1) + 3 +
-				  2 * leftBorder + 2 * rightBorder + 1,
+				  2 * leftBorder + 2 * rightBorder,
 				  maxBoxes * boxSize + boxSize + 6, null, style)
 		{
 			MaxColumns = maxColumns;

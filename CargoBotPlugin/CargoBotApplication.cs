@@ -68,7 +68,8 @@ namespace CargoBot
             summonButton.Callback = (self, t) => Summon(menu1);
             leaderboardButton.Callback = (self, t) =>
             {
-                Leaderboard globalLeaderboard = new Leaderboard(0, 0, 40, 60, Game.LeaderboardDatabaseKey);
+                Leaderboard globalLeaderboard = new Leaderboard(0, 0, 40, 60, Game.LeaderboardDatabaseKey,
+                    new LeaderboardStyle() { Ascending = false });
                 globalLeaderboard.AddFooter(new Button(0, 0, 0, 4, "back", null, new ButtonStyle() { Wall = 155 }, (self2, touch) => Unsummon()));
                 globalLeaderboard.LoadDBData();
                 Summon(globalLeaderboard);

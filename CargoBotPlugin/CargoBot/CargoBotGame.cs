@@ -21,6 +21,7 @@ namespace CargoBot
 
 		public Field Field;
 		public List<SlotLine> Lines;
+		public Label StarsLabel;
 		public Label StarsCountLabel;
 		public Toolbox Toolbox;
 		public Checkbox SpeedCheckbox;
@@ -55,18 +56,24 @@ namespace CargoBot
 			Field = Add(new Field(1, 1, 8, 7, 2, 2, 2, 1,
 				TileID.SlimeBlock, PaintID2.White, TileID.SlimeBlock, PaintID2.White,
 				new UIStyle() { Wall = 155, WallColor = PaintID2.White }));
-			Add(new VisualObject(1, Field.Height + 5, 4, 22, new UIConfiguration() { UseBegin = false },
-				new UIStyle() { Wall = WallID.SapphireGemspark }));
+			Add(new VisualObject(1, Field.Height + 5, 4, 22, new UIConfiguration() { UseBegin = true },
+				new UIStyle() { Wall = WallID.SapphireGemspark, WallColor = PaintID2.DeepSkyBlue },
+				(self, touch) => Player.SendInfoMessage(Slot.InfoMessage(0))));
 
 			Lines = new List<SlotLine>();
 			for (int i = 0; i < 4; i++)
 				Lines.Add(Add(new SlotLine(1, Field.Height + 4 + i * 6, i, i < 3 ? 8 : 5)));
 
-			Add(new Label(1, 1 + Field.Height + 1, 10, 2, "stars"));
+			StarsLabel = Add(new Label(1, 1 + Field.Height + 1, 11, 2, "stars", new LabelStyle() { WallColor = PaintID2.DeepRed }));
 			StarsCountLabel = Add(new Label(12, 1 + Field.Height + 1, 2, 2, "0", new LabelStyle() { WallColor = PaintID2.DeepRed }));
 
-			Add(new Button(21, 1 + Field.Height + 1, 12, 2, "rating", null, new ButtonStyle()
-				{ WallColor = PaintID2.DeepYellow, BlinkStyle = ButtonBlinkStyle.Full }, (self, touch) => ShowRating()));
+			Add(new Button(16, 1 + Field.Height + 1, 22, 2, "leaderboard", null, new ButtonStyle()
+				{
+					//TextIndent = new Indent() { Left = 1 },
+					Wall = WallID.AmberGemspark,
+					WallColor = PaintID2.DeepSkyBlue,
+					BlinkStyle = ButtonBlinkStyle.Full
+				}, (self, touch) => ShowRating()));
 
 			Add(new Label(39, 1 + Field.Height + 1, 16, 2, "toolbox"));
 			Toolbox = Add(new Toolbox(39, 1 + Field.Height + 4, 4, 4));
@@ -252,8 +259,12 @@ namespace CargoBot
 						StarsCountLabel.Style.WallColor = PaintID2.DeepGreen;
 						break;
                 }
+				StarsLabel.Style.WallColor = StarsCountLabel.Style.WallColor;
 				if (draw)
-					StarsCountLabel.Update().Apply().Draw();
+                {
+					StarsCountLabel.Update().Apply();
+					StarsLabel.Update().Apply().Draw(width: StarsLabel.Width + 2);
+                }
             }
 		}
 
@@ -297,7 +308,7 @@ namespace CargoBot
 		{
 			lock (Locker)
 			{
-				if (Disposed || !Running)
+				if (!Running || !CalculateActive())
 					return;
 				var value = PullAction();
 				RunAction(value);
