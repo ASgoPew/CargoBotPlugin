@@ -53,7 +53,7 @@ namespace CargoBot
 
 			ColumnsX = 1 + LeftBorder;
 			var craneStyle = new UIStyle() { Wall = Style.Wall, WallColor = Style.WallColor, TileColor = PaintID2.Brown };
-			Crane = Add(new Crane(0, 0, MaxColumns, MaxBoxes, BoxSize, BoxDelay, LeftBorder, borderTileType, craneStyle));
+			Crane = Add(new Crane(0, 0, MaxColumns, MaxBoxes, BoxSize, BoxDelay, LeftBorder, BorderTileType, craneStyle));
 
 			var columnStyle = new UIStyle() { Wall = Style.Wall, WallColor = Style.WallColor };
 			Columns = new List<Column>();

@@ -79,7 +79,7 @@ namespace CargoBot
 					Wall = WallID.AmberGemspark,
 					WallColor = PaintID2.DeepSkyBlue,
 					BlinkStyle = ButtonBlinkStyle.Full
-				}, (self, touch) => ShowRating()));
+				}, (self, touch) => ShowLeaderbord()));
 
 			Add(new Label(39, 1 + Field.Height + 1, 16, 2, "toolbox"));
 			Toolbox = Add(new Toolbox(39, 1 + Field.Height + 4, 4, 4));
@@ -277,7 +277,7 @@ namespace CargoBot
             }
 		}
 
-		public void ShowRating()
+		public void ShowLeaderbord()
         {
 			lock (Locker)
             {
@@ -287,10 +287,10 @@ namespace CargoBot
 					Level.LoadField(this);
 				}
 				var app = GetAncestor<CargoBotApplication>();
-				var leaderboard = new Leaderboard(0, 0, 40, 60, LevelLeaderboardDatabaseKey);
+				var leaderboard = new Leaderboard(0, 0, 50, 50, LevelLeaderboardDatabaseKey, new LeaderboardStyle() { Count = 100 });
 				leaderboard.Configuration.Custom.CanTouch = (self, touch) => touch.PlayerIndex == Player.Index;
 				leaderboard.LoadDBData();
-				leaderboard.AddFooter(new Button(0, 0, 0, 4, "back", null, new ButtonStyle() { Wall = 155 }, (self, touch) => app.Unsummon()));
+				leaderboard.AddFooter(new Button(0, 0, 0, 4, "back", null, new ButtonStyle() { Wall = 154, WallColor = 27 }, (self, touch) => app.Unsummon()));
 				app.Summon(leaderboard);
             }
         }
