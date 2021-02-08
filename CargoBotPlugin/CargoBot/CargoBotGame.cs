@@ -49,8 +49,9 @@ namespace CargoBot
 			: base(x, y, 0, 0, new UIConfiguration() { UseEnd = true, BeginRequire = false },
 				  new ContainerStyle() { Wall = 155 })
 		{
-			Field = Add(new Field(1, 1, 8, 7, 2, 2, 2, 1, TileID.EmeraldGemspark,
-				PaintID2.Shadow, new UIStyle() { Wall = 155, WallColor = PaintID2.White }));
+			Field = Add(new Field(1, 1, 8, 7, 2, 2, 2, 1,
+				TileID.SlimeBlock, PaintID2.White, TileID.Cog, PaintID2.Shadow,
+				new UIStyle() { Wall = 155, WallColor = PaintID2.White }));
 			Add(new VisualObject(1, Field.Height + 5, 4, 22, new UIConfiguration() { UseBegin = false },
 				new UIStyle() { Wall = WallID.SapphireGemspark }));
 
@@ -99,13 +100,18 @@ namespace CargoBot
 			if (touch.State == TouchState.End && !Running)
 			{
 				var _begin_slot = touch.Session.BeginTouch.Object;
-				if (_begin_slot is Slot begin_slot && begin_slot.WithCondition)
+				if (_begin_slot is Slot begin_slot)
 				{
-					if (touch.Session.BeginTouch.Y > 0)
-						begin_slot.Value = 0;
+					if (begin_slot.WithCondition)
+					{
+						if (touch.Session.BeginTouch.Y > 0)
+							begin_slot.Value = 0;
+						else
+							begin_slot.Condition = null;
+						begin_slot.Apply().Draw();
+					}
 					else
-						begin_slot.Condition = null;
-					begin_slot.Apply().Draw();
+						Player.SendInfoMessage("Drag and drop an arrow box from toolbox to F1 program line (on the left)\nThen press Run to see how the game works");
 				}
 			}
 		}
@@ -134,22 +140,7 @@ namespace CargoBot
 
 			GetAncestor<Panel>().Summon(this);
 			Player.SendInfoMessage($"You session has begun. You have {SessionLength/60000} minutes.");
-
-			/*int sessionIndex = SessionIndex;
-			Task.Delay(SessionLength).ContinueWith(_ =>
-			{
-				if (Running)
-					ExitRequested = true;
-				else
-					EndSession(sessionIndex);
-			});*/
 		}
-		/*public void EndSession(int sessionIndex)
-		{
-			if (sessionIndex != SessionIndex || !Playing)
-				return;
-			Stop();
-		}*/
 
 		public void Stop()
 		{
@@ -263,6 +254,7 @@ namespace CargoBot
 				}
 				var app = GetAncestor<CargoBotApplication>();
 				var leaderboard = new Leaderboard(0, 0, 40, 60, Level.LevelName);
+				leaderboard.Configuration.Custom.CanTouch = (self, touch) => touch.PlayerIndex == Player.Index;
 				leaderboard.LoadDBData();
 				leaderboard.AddFooter(new Button(0, 0, 0, 4, "back", null, new ButtonStyle() { Wall = 155 }, (self, touch) => app.Unsummon()));
 				app.Summon(leaderboard);

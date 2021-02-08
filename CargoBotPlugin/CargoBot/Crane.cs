@@ -34,7 +34,7 @@ namespace CargoBot
         public void Reset(int column)
         {
             Column = column - 1;
-            SetXY(Field.ColumnsX + (BoxSize + BoxDelay) * Column, 1, false);
+            SetXY(Field.ColumnsX - 1 + (BoxSize + BoxDelay) * Column, 1, false);
             Position = 0;
             if (Box != null)
                 Remove(Box);

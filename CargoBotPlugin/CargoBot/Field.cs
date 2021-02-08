@@ -19,8 +19,10 @@ namespace CargoBot
 		public int ResultColumnsX;
 
 		public int Divider;
-		public ushort TileType;
+		public ushort BorderTileType;
 		public byte BorderTileColor;
+		public ushort BoxPlaceTileType;
+		public byte BoxPlaceTileColor;
 		public Crane Crane;
 		public List<Column> Columns;
 		public List<Column> ResultColumns;
@@ -29,7 +31,8 @@ namespace CargoBot
 		public CargoBotGame Game => GetAncestor<CargoBotGame>();
 
 		public Field(int x, int y, int maxColumns, int maxBoxes, int boxSize, int boxDelay,
-			int leftBorder, int rightBorder, ushort tile, byte borderTileColor, UIStyle style)
+			int leftBorder, int rightBorder, ushort borderTileType, byte borderTileColor, ushort boxPlaceTileType,
+			byte boxPlaceTileColor, UIStyle style)
 			: base(x, y, maxColumns * (boxSize + 1) + (maxColumns - 1) * (boxDelay + 1) + 3 +
 				  2 * leftBorder + 2 * rightBorder,
 				  maxBoxes * boxSize + boxSize + 5, null, style)
@@ -42,12 +45,14 @@ namespace CargoBot
 			RightBorder = rightBorder;
 
 			Divider = 1 + 2 * LeftBorder + MaxColumns * BoxSize + (MaxColumns - 1) * BoxDelay;
-			TileType = tile;
+			BorderTileType = borderTileType;
 			BorderTileColor = borderTileColor;
+			BoxPlaceTileType = boxPlaceTileType;
+			BoxPlaceTileColor = boxPlaceTileColor;
 
 			ColumnsX = 1 + LeftBorder;
 			var craneStyle = new UIStyle() { Wall = Style.Wall, WallColor = Style.WallColor, TileColor = PaintID2.Brown };
-			Crane = Add(new Crane(0, 0, MaxColumns, MaxBoxes, BoxSize, BoxDelay, LeftBorder, tile, craneStyle));
+			Crane = Add(new Crane(0, 0, MaxColumns, MaxBoxes, BoxSize, BoxDelay, LeftBorder, borderTileType, craneStyle));
 
 			var columnStyle = new UIStyle() { Wall = Style.Wall, WallColor = Style.WallColor };
 			Columns = new List<Column>();
@@ -80,10 +85,7 @@ namespace CargoBot
             base.UpdateThisNative();
 
 			if (Game.Level == null)
-			{
-
 				return;
-			}
 
 			ColumnsCount = Game.Level.Columns.Count();
 			int space = MaxColumns * BoxSize + (MaxColumns - 1) * BoxDelay;
@@ -130,7 +132,7 @@ namespace CargoBot
 				if (tile == null)
 					continue;
 				tile.active(true);
-				tile.type = TileType;
+				tile.type = BorderTileType;
 				tile.color(BorderTileColor);
 				tile.inActive(true);
 			}
@@ -142,13 +144,23 @@ namespace CargoBot
 			for (int i = 0; i < ColumnsCount; i++)
 			{
 				for (int j = 0; j < BoxSize; j++)
-					Tile(x + j, y)?.color(color);
+                {
+					var tile = Tile(x + j, y);
+					if (tile == null)
+						continue;
+					tile.type = BoxPlaceTileType;
+					tile.color(BoxPlaceTileColor);
+				}
 				x += BoxSize + BoxDelay;
 			}
 			x = ResultColumnsX;
 			for (int i = 0; i < ColumnsCount; i++)
 			{
-				Tile(x, y)?.color(color);
+				var tile = Tile(x, y);
+				if (tile == null)
+					continue;
+				tile.type = BoxPlaceTileType;
+				tile.color(BoxPlaceTileColor);
 				x += 2;
 			}
 		}
