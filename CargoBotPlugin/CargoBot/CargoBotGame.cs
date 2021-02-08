@@ -157,7 +157,7 @@ namespace CargoBot
 			UsedSlots = Leaderboard.GetLeaderboardValue(LevelLeaderboardDatabaseKey, User) ?? Int32.MaxValue;
 			UpdateStarsLabel(false);
 
-			GetAncestor<Panel>().Summon(this);
+			GetAncestor<Panel>().Summon(this, Alignment.Down);
 			Player.SendInfoMessage($"You session has begun. You currently have {StarsGained} stars for this level.{(StarsGained == 3 ? "" : " Try gaining 3.")}\nYou have {SessionLength/60000} minutes.");
 		}
 
@@ -291,7 +291,7 @@ namespace CargoBot
 				leaderboard.Configuration.Custom.CanTouch = (self, touch) => touch.PlayerIndex == Player.Index;
 				leaderboard.LoadDBData();
 				leaderboard.AddFooter(new Button(0, 0, 0, 4, "back", null, new ButtonStyle() { Wall = 154, WallColor = 27 }, (self, touch) => app.Unsummon()));
-				app.Summon(leaderboard);
+				app.Summon(leaderboard, Alignment.Down);
             }
         }
 

@@ -95,21 +95,21 @@ namespace CargoBot
                     }))
                 ).Disable(false) as Menu;
 
-            summonButton.Callback = (self, t) => Summon(menu1);
+            summonButton.Callback = (self, t) => Summon(menu1, Alignment.Down);
             leaderboardButton.Callback = (self, t) =>
             {
                 Leaderboard globalLeaderboard = new Leaderboard(0, 0, 50, 50, Game.LeaderboardDatabaseKey,
                     new LeaderboardStyle() { Ascending = false, Count = 100 });
                 globalLeaderboard.AddFooter(new Button(0, 0, 0, 4, "back", null, new ButtonStyle() { Wall = 154, WallColor = 27 }, (self2, touch) => Unsummon()));
                 globalLeaderboard.LoadDBData();
-                Summon(globalLeaderboard);
+                Summon(globalLeaderboard, Alignment.Down);
             };
             menu1.Input.Callback = (self, value, player) =>
             {
                 if (value == "back")
                     Unsummon();
                 else
-                    Summon(menus[value]);
+                    Summon(menus[value], Alignment.Down);
             };
         }
 
