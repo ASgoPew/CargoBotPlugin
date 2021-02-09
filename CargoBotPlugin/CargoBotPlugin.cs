@@ -1,17 +1,10 @@
-﻿using FakeProvider;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Terraria;
 using TerrariaApi.Server;
 using TerrariaUI;
-using TerrariaUI.Base;
-using TerrariaUI.Base.Style;
-using TerrariaUI.Widgets;
-using TShockAPI;
-using TShockAPI.DB;
-using TShockAPI.Hooks;
 
 namespace CargoBot
 {
@@ -23,7 +16,6 @@ namespace CargoBot
         public override string Author => "ASgo & Anzhelika";
         public override string Description => "CargoBot TUI game";
 
-        public const int MaxInstances = 255;
         internal static UserSaver UserSaver = new UserSaver();
         public static ApplicationType ApplicationType;
 

@@ -1,9 +1,5 @@
-﻿using FakeProvider;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria.ID;
 using TerrariaUI;
 using TerrariaUI.Base;
@@ -30,7 +26,7 @@ namespace CargoBot
                 SavePosition = true,
                 SaveSize = false,
                 SaveEnabled = true
-            }, FakeProviderAPI.CreateTileProvider(name, 0, 0, width, height))
+            })
         {
             SetupLayout(Alignment.Up, Direction.Down, childIndent: 0);
 
@@ -112,7 +108,6 @@ namespace CargoBot
                     Summon(menus[value], Alignment.Down);
             };
         }
-
         protected override void EndPlayerSessionNative()
         {
             base.EndPlayerSessionNative();

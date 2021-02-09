@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FakeProvider">
-      <HintPath>_References\FakeProvider.dll</HintPath>
-    </Reference>
     <Reference Include="OTAPI">
       <HintPath>_References\OTAPI.dll</HintPath>
     </Reference>
