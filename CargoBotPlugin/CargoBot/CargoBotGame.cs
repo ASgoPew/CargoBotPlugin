@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Terraria.ID;
+using TerrariaUI;
 using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
 using TerrariaUI.Widgets;
@@ -43,6 +44,7 @@ namespace CargoBot
 		public bool WaitingForReset = false;
 		public bool ExitRequested = false;
 		public bool Fast = false;
+		public Stack<(int, int)> FunctionStack = new Stack<(int, int)>();
 
 		public string LeaderboardDatabaseKey => "CargoBotGame";
 		public string LevelLeaderboardDatabaseKey => Level.LevelName;
@@ -334,8 +336,9 @@ namespace CargoBot
 					EndGame(true);
 					return;
                 }
-				else if (RunSlot == Lines[RunLine].Slots.Count // Checking if there is no next slot
-					|| Lines[RunLine].Slots.Skip(RunSlot).All(slot => slot.Value == 0))
+				else if ((RunSlot == Lines[RunLine].Slots.Count // Checking if there is no next slot
+						|| Lines[RunLine].Slots.Skip(RunSlot).All(slot => slot.Value == 0))
+					&& FunctionStack.Count == 0)
                 {
 					EndGame(false);
 					return;
@@ -348,13 +351,21 @@ namespace CargoBot
 
 		public int? PullAction()
 		{
-			SlotLine line = Lines[RunLine];
-			Slot slot = line.Slots[RunSlot];
+			Slot slot = Lines[RunLine].Slots[RunSlot];
 			while (slot.Value == 0)
             {
-				if (RunSlot + 1 >= line.Slots.Count)
-					return null;
-				slot = line.Slots[++RunSlot];
+				if (RunSlot + 1 >= Lines[RunLine].Slots.Count)
+                {
+					if (FunctionStack.Count == 0)
+						return null;
+					else
+                    {
+						var pair = FunctionStack.Pop();
+						RunLine = pair.Item1;
+						RunSlot = pair.Item2;
+                    }
+                }
+				slot = Lines[RunLine].Slots[++RunSlot];
             }
 
 			// Disabling old slot selection
@@ -377,15 +388,6 @@ namespace CargoBot
 					condition_fit = false;
 			}
 
-			// Moving current slot
-			RunSlot += 1;
-			if (condition_fit)
-				if (slot.Value >= 4 && slot.Value < 8)
-				{
-					RunLine = slot.Value - 4;
-					RunSlot = 0;
-				}
-
 			if (condition_fit)
 				return slot.Value;
 			return null;
@@ -396,14 +398,27 @@ namespace CargoBot
 			if (action.HasValue && action.Value > 0)
 			{
 				if (action == 1)
+                {
 					Field.Crane.MoveRight();
+					RunSlot += 1;
+				}
 				else if (action == 2)
 				{
 					Field.Crane.MoveDown();
+					RunSlot += 1;
 					Task.Delay(RunDelay / 2).ContinueWith(_ => Field.Crane.MoveUp());
 				}
 				else if (action == 3)
+                {
 					Field.Crane.MoveLeft();
+					RunSlot += 1;
+				}
+				else if (action >= 4 && action < 8)
+                {
+					FunctionStack.Push((RunLine, RunSlot));
+					RunLine = action.Value - 4;
+					RunSlot = 0;
+				}
 			}
 		}
 	}
