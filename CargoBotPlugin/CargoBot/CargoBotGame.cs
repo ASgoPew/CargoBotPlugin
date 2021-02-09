@@ -6,6 +6,7 @@ using Terraria.ID;
 using TerrariaUI;
 using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
+using TerrariaUI.Hooks.Args;
 using TerrariaUI.Widgets;
 using TShockAPI;
 using TUIPlugin;
@@ -45,6 +46,7 @@ namespace CargoBot
 		public bool ExitRequested = false;
 		public bool Fast = false;
 		public Stack<(int, int)> FunctionStack = new Stack<(int, int)>();
+		private object Locker = new object();
 
 		public string LeaderboardDatabaseKey => "CargoBotGame";
 		public string LevelLeaderboardDatabaseKey => Level.LevelName;
@@ -135,7 +137,7 @@ namespace CargoBot
 
         protected override bool CanTouchNative(Touch touch)
         {
-            return base.CanTouchNative(touch) && touch.PlayerIndex == Player.Index
+			return base.CanTouchNative(touch) && touch.PlayerIndex == Player.Index
 				|| touch.Player().HasPermission("TUI.control");
         }
 
