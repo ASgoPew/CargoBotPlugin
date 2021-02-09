@@ -390,6 +390,8 @@ namespace CargoBot
 
 			if (condition_fit)
 				return slot.Value;
+			else
+				RunSlot++;
 			return null;
 		}
 
