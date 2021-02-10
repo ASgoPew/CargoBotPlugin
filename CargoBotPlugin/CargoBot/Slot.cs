@@ -100,7 +100,7 @@ namespace CargoBot
 						tile.active(true);
 						tile.inActive(true);
 						tile.type = (ushort)TileID.AlphabetStatues;
-						tile.color((byte)PaintID2.Gray);
+						tile.color((byte)PaintID2.Shadow);
 						tile.frameX = (short)(x < 2
 							? (FrameF + x * 18)
 							: (FrameN[Value - 4] + (x - 2) * 18));

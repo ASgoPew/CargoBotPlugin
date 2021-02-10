@@ -60,7 +60,7 @@ namespace CargoBot
             Button leaderboardButton = AddToLayout(new Button(0, 0, width, 4, "leaderboard", null,
                 new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.None, Wall = WallID.RubyGemspark, WallColor = PaintID2.Gray }));
 
-            Menu menu1 = Add(new Menu(0, 0, CargoBotPlugin.Levels.Keys.Append("back"),
+            Menu menu1 = Add(new Menu(0, 0, CargoBotPlugin.LevelsByName.Keys.Append("back"),
                 new ButtonStyle() { Wall = 154, WallColor = PaintID2.Gray },
                 new ButtonStyle() { Wall = 156, WallColor = PaintID2.Gray },
                 "Select pack", new LabelStyle() { Wall = 155, WallColor = PaintID2.Gray },
@@ -71,9 +71,9 @@ namespace CargoBot
             Game.Disable(false);
 
             Dictionary<string, Menu> menus = new Dictionary<string, Menu>();
-            foreach (string pack in CargoBotPlugin.Levels.Keys)
+            foreach (string pack in CargoBotPlugin.LevelsByName.Keys)
                 menus[pack] = Add(
-                    new Menu(0, 0, CargoBotPlugin.Levels[pack].Keys.Append("back"),
+                    new Menu(0, 0, CargoBotPlugin.LevelsByName[pack].Keys.Append("back"),
                     new ButtonStyle() { Wall = 154, WallColor = PaintID2.Gray },
                     new ButtonStyle() { Wall = 156, WallColor = PaintID2.Gray },
                     "Select level", new LabelStyle() { Wall = 155, WallColor = PaintID2.Gray },
@@ -87,7 +87,7 @@ namespace CargoBot
                         else if (CargoBotPlugin.Games.Any(pair => pair.Playing && pair.User == account2.ID))
                             player.SendErrorMessage("You are already playing this game.");
                         else
-                            Game.Start(CargoBotPlugin.Levels[pack][value], player, account2.ID);
+                            Game.Start(CargoBotPlugin.LevelsByName[pack][value], player, account2.ID);
                     }))
                 ).Disable(false) as Menu;
 

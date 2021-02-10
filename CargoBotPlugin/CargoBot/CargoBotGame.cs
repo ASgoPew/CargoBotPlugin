@@ -76,14 +76,6 @@ namespace CargoBot
 			StarsLabel = Add(new Label(1, 1 + Field.Height + 1, 11, 2, "stars", new LabelStyle() { WallColor = PaintID2.DeepRed }));
 			StarsCountLabel = Add(new Label(12, 1 + Field.Height + 1, 2, 2, "0", new LabelStyle() { WallColor = PaintID2.DeepRed }));
 
-			Add(new Button(16, 1 + Field.Height + 1, 22, 2, "leaderboard", null, new ButtonStyle()
-				{
-					//TextIndent = new Indent() { Left = 1 },
-					Wall = WallID.AmberGemspark,
-					WallColor = PaintID2.DeepSkyBlue,
-					BlinkStyle = ButtonBlinkStyle.Full
-				}, (self, touch) => ShowLeaderbord()));
-
 			Add(new Label(39, 1 + Field.Height + 1, 16, 2, "toolbox"));
 			Toolbox = Add(new Toolbox(39, 1 + Field.Height + 4, 4, 4));
 
@@ -91,11 +83,53 @@ namespace CargoBot
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156 },
 				(self, t) => StartRunning()));
 
-			Add(new Button(36, 1 + Field.Height + 4 + Toolbox.Height + 2, 10, 4, "hint", null,
+			Add(new Button(43, 1 + Field.Height + 4 + Toolbox.Height + 2, 12, 4, "clear", null,
+				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.Gray },
+				(self, t) => GetAncestor<Application>().Confirm("Clear all slots", (result) =>
+				{
+					if (result)
+                    {
+						Level.ClearSlots(this);
+						Level.UDBWrite(User);
+						foreach (var line in Lines)
+							line.Apply();
+                    }
+				})));
+
+			Add(new Button(1, 1 + Field.Height + 4 + Toolbox.Height + 2 + 5, 24, 4, "leaderboard", null, new ButtonStyle()
+			{
+				Wall = WallID.AmberGemspark,
+				WallColor = PaintID2.DeepSkyBlue,
+				BlinkStyle = ButtonBlinkStyle.Full
+			}, (self, touch) => ShowLeaderbord()));
+
+			Add(new Button(26, 1 + Field.Height + 4 + Toolbox.Height + 2 + 5, 10, 4, "next", null,
+				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.Gray },
+				(self, t) =>
+				{
+					Level.UDBWrite(User);
+					int index = CargoBotPlugin.Levels.IndexOf(Level);
+					if (index + 1 >= CargoBotPlugin.Levels.Count)
+                    {
+						t.Player().SendInfoMessage("This level is the last one.");
+						return;
+                    }
+					Level = CargoBotPlugin.Levels[index + 1];
+					Level.LoadStatic(this);
+					Level.ClearSlots(this);
+					if (!Level.UDBRead(User))
+						StarsGained = 0;
+					TotalStars = Leaderboard.GetLeaderboardValue(LeaderboardDatabaseKey, User) ?? 0;
+					UsedSlots = Leaderboard.GetLeaderboardValue(LevelLeaderboardDatabaseKey, User) ?? Int32.MaxValue;
+					UpdateStarsLabel(false);
+					Update().Apply().Draw();
+				}));
+
+			Add(new Button(37, 1 + Field.Height + 4 + Toolbox.Height + 2 + 5, 10, 4, "hint", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.Gray },
 				(self, t) => t.Player().SendInfoMessage($"Hint: {Level.Hint}")));
 
-			SpeedCheckbox = Add(new Checkbox(47, 1 + Field.Height + 4 + Toolbox.Height + 3, 2, new CheckboxStyle()
+			SpeedCheckbox = Add(new Checkbox(48, 1 + Field.Height + 4 + Toolbox.Height + 3 + 5, 2, new CheckboxStyle()
 				{ Wall = 156, WallColor = PaintID2.Gray, CheckedColor = PaintID2.DeepOrange },
 				new Input<bool>(false, false, (self, value, player) =>
 				{
@@ -106,11 +140,11 @@ namespace CargoBot
 						Player.SendInfoMessage("Fast mode off.");
 				})));
 
-			Add(new Button(51, 1 + Field.Height + 4 + Toolbox.Height + 2, 4, 4, "x", null,
+			Add(new Button(51, 1 + Field.Height + 4 + Toolbox.Height + 2 + 5, 4, 4, "x", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.DeepRed },
 				(self, t) => EndPlayerSession()));
 
-			SetWH(1 + Field.Width + 1, 1 + Field.Height + 4 + Toolbox.Height + 2 + 4 + 1, false);
+			SetWH(1 + Field.Width + 1, 1 + Field.Height + 4 + Toolbox.Height + 2 + 4 + 1 + 5, false);
 		}
 
 		public override void Invoke(Touch touch)
