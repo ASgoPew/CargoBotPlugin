@@ -17,8 +17,8 @@ namespace CargoBot
 	{
 		public const int SlowDelay = 600;
 		public const int FastDelay = 200;
-		public const int MaxRunningTime = 60000;
-		public const int SessionLength = 180000;
+		public const int MaxRunningTime = 3000000;
+		public const int SessionLength = 300000;
 		public const int ResultsDelay = 3000;
 
 		public Field Field;
@@ -321,54 +321,50 @@ namespace CargoBot
 
 		public void RunMove()
 		{
-			lock (Locker)
-			{
-				if (!Running || !CalculateActive())
-					return;
+			try
+            {
+				lock (Locker)
+				{
+					if (!Running || !CalculateActive())
+						return;
 
-				var value = PullAction();
-				RunAction(value);
-				if ((DateTime.UtcNow - BeginTime).TotalMilliseconds > MaxRunningTime)
-                {
-					EndGame(null);
-					return;
-                }
-				if (value == 2 && Field.Crane.Box == null && Field.CheckWin())
-                {
-					EndGame(true);
-					return;
-                }
-				else if ((RunSlot == Lines[RunLine].Slots.Count // Checking if there is no next slot
-						|| Lines[RunLine].Slots.Skip(RunSlot).All(slot => slot.Value == 0))
-					&& FunctionStack.Count == 0)
-                {
-					EndGame(false);
-					return;
-                }
+					int? value = PullAction();
+					if (value.HasValue)
+						RunAction(value.Value);
+					else if (!Running)
+						return;
+					else
+						RunSlot++;
+						
+					if ((DateTime.UtcNow - BeginTime).TotalMilliseconds > MaxRunningTime)
+					{
+						EndGame(null);
+						return;
+					}
+					if (value == 2 && Field.Crane.Box == null && Field.CheckWin())
+					{
+						EndGame(true);
+						return;
+					}
 
-				if (Running)
-					Task.Delay(RunDelay).ContinueWith(_ => RunMove());
-			}
+					if (Running)
+						Task.Delay(RunDelay).ContinueWith(_ => RunMove());
+				}
+            }
+			catch (Exception e)
+            {
+				TUI.HandleException(e);
+            }
 		}
 
 		public int? PullAction()
 		{
-			Slot slot = Lines[RunLine].Slots[RunSlot];
-			while (slot.Value == 0)
-            {
-				if (RunSlot + 1 >= Lines[RunLine].Slots.Count)
-                {
-					if (FunctionStack.Count == 0)
-						return null;
-					else
-                    {
-						var pair = FunctionStack.Pop();
-						RunLine = pair.Item1;
-						RunSlot = pair.Item2;
-                    }
-                }
-				slot = Lines[RunLine].Slots[++RunSlot];
-            }
+			Slot slot = FindNextSlot();
+			if (slot == null)
+			{
+				EndGame(false);
+				return null;
+			}
 
 			// Disabling old slot selection
 			OldSlot.Style.WallColor = null;
@@ -390,39 +386,50 @@ namespace CargoBot
 					condition_fit = false;
 			}
 
-			if (condition_fit)
-				return slot.Value;
-			else
-				RunSlot++;
-			return null;
+			return condition_fit ? (int?)slot.Value : null;
 		}
 
-		public void RunAction(int? action)
+		public Slot FindNextSlot()
+        {
+			while (RunSlot >= Lines[RunLine].Slots.Count || Lines[RunLine].Slots[RunSlot].Value == 0)
+            {
+				while (RunSlot >= Lines[RunLine].Slots.Count)
+					if (FunctionStack.Count == 0)
+						return null;
+					else
+					{
+						var pair = FunctionStack.Pop();
+						RunLine = pair.Item1;
+						RunSlot = pair.Item2;
+					}
+				RunSlot++;
+			}
+			return Lines[RunLine].Slots[RunSlot];
+		}
+
+		public void RunAction(int action)
 		{
-			if (action.HasValue && action.Value > 0)
+			if (action == 1)
+            {
+				Field.Crane.MoveRight();
+				RunSlot += 1;
+			}
+			else if (action == 2)
 			{
-				if (action == 1)
-                {
-					Field.Crane.MoveRight();
-					RunSlot += 1;
-				}
-				else if (action == 2)
-				{
-					Field.Crane.MoveDown();
-					RunSlot += 1;
-					Task.Delay(RunDelay / 2).ContinueWith(_ => Field.Crane.MoveUp());
-				}
-				else if (action == 3)
-                {
-					Field.Crane.MoveLeft();
-					RunSlot += 1;
-				}
-				else if (action >= 4 && action < 8)
-                {
-					FunctionStack.Push((RunLine, RunSlot));
-					RunLine = action.Value - 4;
-					RunSlot = 0;
-				}
+				Field.Crane.MoveDown();
+				RunSlot += 1;
+				Task.Delay(RunDelay / 2).ContinueWith(_ => Field.Crane.MoveUp());
+			}
+			else if (action == 3)
+            {
+				Field.Crane.MoveLeft();
+				RunSlot += 1;
+			}
+			else if (action >= 4 && action < 8)
+            {
+				FunctionStack.Push((RunLine, RunSlot));
+				RunLine = action - 4;
+				RunSlot = 0;
 			}
 		}
 	}
