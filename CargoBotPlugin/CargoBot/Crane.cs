@@ -1,4 +1,5 @@
-﻿using TerrariaUI.Base;
+﻿using TerrariaUI;
+using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
 
 namespace CargoBot

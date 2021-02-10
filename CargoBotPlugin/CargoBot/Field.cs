@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Terraria.ID;
+using TerrariaUI;
 using TerrariaUI.Base;
 using TerrariaUI.Base.Style;
 
@@ -95,7 +96,7 @@ namespace CargoBot
 			ResultColumnsX = 1 + LeftBorder * 2 + space + 1 + RightBorder +
 				(resultSpace - (ColumnsCount * 1 + (ColumnsCount - 1) * 1)) / 2;
 
-			Crane.SetXY(ColumnsX - 1, 1, false);
+			Crane.SetXY(ColumnsX - 1 + (BoxSize + BoxDelay) * Crane.Column, 1, false);
 
 			int x = ColumnsX;
 			int y = Height - 2 - MaxBoxes * BoxSize;
@@ -169,10 +170,6 @@ namespace CargoBot
 					tile.inActive(true);
 					tile.type = BoxPlaceTileType;
 					tile.color(BoxPlaceTileColor);
-					//if (j == 0)
-						//tile.slope(2);
-					//else if (j == BoxSize - 1)
-						//tile.slope(1);
 				}
 				x += BoxSize + BoxDelay;
 			}

@@ -46,7 +46,6 @@ namespace CargoBot
 		public bool ExitRequested = false;
 		public bool Fast = false;
 		public Stack<(int, int)> FunctionStack = new Stack<(int, int)>();
-		private object Locker = new object();
 
 		public string LeaderboardDatabaseKey => "CargoBotGame";
 		public string LevelLeaderboardDatabaseKey => Level.LevelName;
@@ -283,73 +282,66 @@ namespace CargoBot
 
 		public void ShowLeaderbord()
         {
-			lock (Locker)
+			if (Running || WaitingForReset)
             {
-				if (Running || WaitingForReset)
-                {
-					StopRunning();
-					Level.LoadField(this);
-				}
-				var app = GetAncestor<CargoBotApplication>();
-				var leaderboard = new Leaderboard(0, 0, 50, 50, LevelLeaderboardDatabaseKey, new LeaderboardStyle() { Count = 100 });
-				leaderboard.Configuration.Custom.CanTouch = (self, touch) => touch.PlayerIndex == Player.Index;
-				leaderboard.LoadDBData();
-				leaderboard.AddFooter(new Button(0, 0, 0, 4, "back", null, new ButtonStyle() { Wall = 154, WallColor = 27 }, (self, touch) => app.Unsummon()));
-				app.Summon(leaderboard, Alignment.Down);
-            }
+				StopRunning();
+				Level.LoadField(this);
+			}
+			var app = GetAncestor<CargoBotApplication>();
+			var leaderboard = new Leaderboard(0, 0, 50, 50, LevelLeaderboardDatabaseKey, new LeaderboardStyle() { Count = 100 });
+			leaderboard.Configuration.Custom.CanTouch = (self, touch) => touch.PlayerIndex == Player.Index;
+			leaderboard.LoadDBData();
+			leaderboard.AddFooter(new Button(0, 0, 0, 4, "back", null, new ButtonStyle() { Wall = 154, WallColor = 27 }, (self, touch) => app.Unsummon()));
+			app.Summon(leaderboard, Alignment.Down);
         }
 
 		public void StartRunning()
 		{
-			lock (Locker)
-				if (Running || WaitingForReset)
-				{
-					StopRunning();
-					Level.LoadField(this);
-					Apply().Draw();
-				}
-				else
-				{
-					Level.UDBWrite(User);
+			if (Running || WaitingForReset)
+			{
+				StopRunning();
+				Level.LoadField(this);
+				Apply().Draw();
+			}
+			else
+			{
+				Level.UDBWrite(User);
 
-					Running = true;
-					RunningIndex++;
-					BeginTime = DateTime.UtcNow;
-					RunMove();
-				}
+				Running = true;
+				RunningIndex++;
+				BeginTime = DateTime.UtcNow;
+				RunMove();
+			}
 		}
 
 		public void RunMove()
 		{
 			try
             {
-				lock (Locker)
-				{
-					if (!Running || !CalculateActive())
-						return;
+				if (!Running || !CalculateActive())
+					return;
 
-					int? value = PullAction();
-					if (value.HasValue)
-						RunAction(value.Value);
-					else if (!Running)
-						return;
-					else
-						RunSlot++;
+				int? value = PullAction();
+				if (value.HasValue)
+					RunAction(value.Value);
+				else if (!Running)
+					return;
+				else
+					RunSlot++;
 						
-					if ((DateTime.UtcNow - BeginTime).TotalMilliseconds > MaxRunningTime)
-					{
-						EndGame(null);
-						return;
-					}
-					if (value == 2 && Field.Crane.Box == null && Field.CheckWin())
-					{
-						EndGame(true);
-						return;
-					}
-
-					if (Running)
-						Task.Delay(RunDelay).ContinueWith(_ => RunMove());
+				if ((DateTime.UtcNow - BeginTime).TotalMilliseconds > MaxRunningTime)
+				{
+					EndGame(null);
+					return;
 				}
+				if (value == 2 && Field.Crane.Box == null && Field.CheckWin())
+				{
+					EndGame(true);
+					return;
+				}
+
+				if (Running)
+					Task.Delay(RunDelay).ContinueWith(_ => RunMove());
             }
 			catch (Exception e)
             {
@@ -401,6 +393,7 @@ namespace CargoBot
 						var pair = FunctionStack.Pop();
 						RunLine = pair.Item1;
 						RunSlot = pair.Item2;
+						TUI.Log($"GOTO {RunLine} {RunSlot}");
 					}
 				RunSlot++;
 			}
