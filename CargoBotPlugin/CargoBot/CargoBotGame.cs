@@ -344,6 +344,7 @@ namespace CargoBot
 				Running = true;
 				RunningIndex++;
 				BeginTime = DateTime.UtcNow;
+				FunctionStack.Clear();
 				RunMove();
 			}
 		}
@@ -427,7 +428,6 @@ namespace CargoBot
 						var pair = FunctionStack.Pop();
 						RunLine = pair.Item1;
 						RunSlot = pair.Item2;
-						TUI.Log($"GOTO {RunLine} {RunSlot}");
 					}
 				RunSlot++;
 			}
