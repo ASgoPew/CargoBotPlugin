@@ -22,7 +22,6 @@ namespace CargoBot
         public CargoBotApplication(string name)
             : base(name, width, height, new ApplicationStyle()
             {
-                Wall = WallID.DiamondGemspark,
                 SavePosition = true,
                 SaveSize = false,
                 SaveEnabled = true
@@ -30,9 +29,9 @@ namespace CargoBot
         {
             SetupLayout(Alignment.Up, Direction.Down, childIndent: 0);
 
-            AddToLayout(new Label(0, 0, width, 4, "cargo bot", new LabelStyle() { }));
+            AddToLayout(new Label(0, 0, width, 4, "cargo bot", new LabelStyle() { Wall = WallID.DiamondGemspark }));
 
-            VisualContainer field = AddToLayout(new VisualContainer(0, 4, width, fieldH));
+            VisualContainer field = AddToLayout(new VisualContainer(0, 4, width, fieldH, null, new ContainerStyle() { Wall = WallID.DiamondGemspark }));
             field.Add(new VisualObject(0, 0, width, 1, null, new UIStyle()
                 { Tile = TileID.SlimeBlock, InActive = true, TileColor = PaintID2.White }));
             field.Add(new VisualObject(0, 11, width, 1, null, new UIStyle()
@@ -55,7 +54,7 @@ namespace CargoBot
             columns[2].Push(2);
             columns[2].Push(3);
 
-            Button summonButton = AddToLayout(new Button(0, 0, width, 4, "start", null,
+            Button startButton = AddToLayout(new Button(0, 0, width, 4, "start", null,
                 new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.None, Wall = WallID.AmberGemspark, WallColor = PaintID2.Gray }));
             Button leaderboardButton = AddToLayout(new Button(0, 0, width, 4, "leaderboard", null,
                 new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.None, Wall = WallID.RubyGemspark, WallColor = PaintID2.Gray }));
@@ -91,7 +90,7 @@ namespace CargoBot
                     }))
                 ).Disable(false) as Menu;
 
-            summonButton.Callback = (self, t) => Summon(menu1, Alignment.Down);
+            startButton.Callback = (self, t) => Summon(menu1, Alignment.Down);
             leaderboardButton.Callback = (self, t) =>
             {
                 Leaderboard globalLeaderboard = new Leaderboard(0, 0, 50, 50, Game.LeaderboardDatabaseKey,
