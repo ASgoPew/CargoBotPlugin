@@ -1152,7 +1152,7 @@ namespace CargoBot
 
         public override void Initialize()
         {
-            ApplicationType = new ApplicationType("cargobot", (name) => new CargoBotApplication(name));
+            ApplicationType = new ApplicationType("cargobot", (name, observers) => new CargoBotApplication(name), true);
             TUI.RegisterApplication(ApplicationType);
         }
 
@@ -1165,6 +1165,7 @@ namespace CargoBot
         {
             if (disposing)
             {
+                TUI.DeregisterApplication("cargobot");
             }
             base.Dispose(disposing);
         }

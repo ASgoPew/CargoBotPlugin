@@ -170,8 +170,8 @@ namespace CargoBot
 
         protected override bool CanTouchNative(Touch touch)
         {
-			return base.CanTouchNative(touch) && touch.PlayerIndex == Player.Index
-				|| touch.Player().HasPermission("TUI.control");
+			return base.CanTouchNative(touch) &&
+				(touch.PlayerIndex == Player.Index || touch.Player().HasPermission("TUI.control"));
         }
 
 		public void Start(CargoBotLevel level, TSPlayer player, int user)

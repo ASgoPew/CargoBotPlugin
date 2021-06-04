@@ -12,13 +12,13 @@ namespace CargoBot
         public static ushort[] Walls = { WallID.RubyGemspark, WallID.AmethystGemspark };
         public static byte[] ConditionColors = { PaintID2.DeepRed, PaintID2.DeepBlue, PaintID2.DeepLime, PaintID2.DeepYellow, PaintID2.Gray };
 		private static object StaticLocker = new object();
-		private static int FrameF = Label.StatueTextFrame('f');
+		private static int FrameF = (10 + 'f' - 'a') * 36;
 		private static int[] FrameN = new int[]
         {
-			Label.StatueTextFrame('1'),
-			Label.StatueTextFrame('2'),
-			Label.StatueTextFrame('3'),
-			Label.StatueTextFrame('4')
+			('1' - '0') * 36,
+			('2' - '0') * 36,
+			('3' - '0') * 36,
+			('4' - '0') * 36
 		};
 
 		public int Value;
