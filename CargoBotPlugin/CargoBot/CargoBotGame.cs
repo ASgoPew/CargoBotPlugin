@@ -81,7 +81,7 @@ namespace CargoBot
 
 			Add(new Button(27, 1 + Field.Height + 4 + Toolbox.Height + 2, 8, 4, "run", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156 },
-				(self, t) => StartRunning()));
+				(self, t) => ToggleRun()));
 
 			Add(new Button(43, 1 + Field.Height + 4 + Toolbox.Height + 2, 12, 4, "clear", null,
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.Gray },
@@ -107,6 +107,7 @@ namespace CargoBot
 				new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.Full, Wall = 156, WallColor = PaintID2.Gray },
 				(self, t) =>
 				{
+					StopRunning();
 					Level.UDBWrite(User);
 					int index = CargoBotPlugin.Levels.IndexOf(Level);
 					if (index + 1 >= CargoBotPlugin.Levels.Count)
@@ -329,7 +330,7 @@ namespace CargoBot
 			app.Summon(leaderboard, Alignment.Down);
         }
 
-		public void StartRunning()
+		public void ToggleRun()
 		{
 			if (Running || WaitingForReset)
 			{
