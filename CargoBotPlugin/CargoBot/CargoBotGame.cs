@@ -17,8 +17,8 @@ namespace CargoBot
 	{
 		public const int SlowDelay = 600;
 		public const int FastDelay = 200;
-		public const int MaxRunningTime = 3000000;
-		public const int SessionLength = 300000;
+		public const int MaxRunningTime = 300000;
+		public const int SessionLength = 600000;
 		public const int ResultsDelay = 3000;
 
 		public Field Field;

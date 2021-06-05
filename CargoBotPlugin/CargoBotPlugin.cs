@@ -194,7 +194,7 @@ namespace CargoBot
                 new int[] { right_arrow, down_arrow, left_arrow, empty, f1, f2, f3, f4,
                     blue_condition, red_condition, green_condition, yellow_condition, no_condition, multi_condition },
                 (12, 6, 5),
-                "Go right once if holding blue, twice if holding yellow, and left if holding none. Repeat.\n\nThe shortest solution uses 5 registers."),
+                "Go right once if holding any, twice if holding blue, and left if holding none. Repeat.\n\nThe shortest solution uses 5 registers."),
 
             #endregion
             #region 8
