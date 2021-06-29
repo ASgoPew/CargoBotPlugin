@@ -59,7 +59,7 @@ namespace CargoBot
             Button leaderboardButton = AddToLayout(new Button(0, 0, width, 4, "leaderboard", null,
                 new ButtonStyle() { BlinkStyle = ButtonBlinkStyle.None, Wall = WallID.RubyGemspark, WallColor = PaintID2.Gray }));
 
-            Menu menu1 = Add(new Menu(0, 0, CargoBotPlugin.LevelsByName.Keys.Append("back"),
+            Menu menu1 = Add(new Menu(0, 0, 0, 0, CargoBotPlugin.LevelsByName.Keys.Append("back"),
                 new ButtonStyle() { Wall = 154, WallColor = PaintID2.Gray },
                 new ButtonStyle() { Wall = 156, WallColor = PaintID2.Gray },
                 "Select pack", new LabelStyle() { Wall = 155, WallColor = PaintID2.Gray },
@@ -72,22 +72,22 @@ namespace CargoBot
             Dictionary<string, Menu> menus = new Dictionary<string, Menu>();
             foreach (string pack in CargoBotPlugin.LevelsByName.Keys)
                 menus[pack] = Add(
-                    new Menu(0, 0, CargoBotPlugin.LevelsByName[pack].Keys.Append("back"),
-                    new ButtonStyle() { Wall = 154, WallColor = PaintID2.Gray },
-                    new ButtonStyle() { Wall = 156, WallColor = PaintID2.Gray },
-                    "Select level", new LabelStyle() { Wall = 155, WallColor = PaintID2.Gray },
-                    new Input<string>(null, null, (self, value, playerIndex) =>
-                    {
-                        TSPlayer player = TShock.Players[playerIndex];
-                        if (value == "back")
-                            Unsummon();
-                        else if (!(player.Account is UserAccount account2))
-                            player.SendErrorMessage("You have to be logged in to play this game.");
-                        else if (CargoBotPlugin.Games.Any(pair => pair.Playing && pair.User == account2.ID))
-                            player.SendErrorMessage("You are already playing this game.");
-                        else
-                            Game.Start(CargoBotPlugin.LevelsByName[pack][value], player, account2.ID);
-                    }))
+                    new Menu(0, 0, 0, 0, CargoBotPlugin.LevelsByName[pack].Keys.Append("back"),
+                        new ButtonStyle() { Wall = 154, WallColor = PaintID2.Gray },
+                        new ButtonStyle() { Wall = 156, WallColor = PaintID2.Gray },
+                        "Select level", new LabelStyle() { Wall = 155, WallColor = PaintID2.Gray },
+                        new Input<string>(null, null, (self, value, playerIndex) =>
+                        {
+                            TSPlayer player = TShock.Players[playerIndex];
+                            if (value == "back")
+                                Unsummon();
+                            else if (!(player.Account is UserAccount account2))
+                                player.SendErrorMessage("You have to be logged in to play this game.");
+                            else if (CargoBotPlugin.Games.Any(pair => pair.Playing && pair.User == account2.ID))
+                                player.SendErrorMessage("You are already playing this game.");
+                            else
+                                Game.Start(CargoBotPlugin.LevelsByName[pack][value], player, account2.ID);
+                        }))
                 ).Disable(false) as Menu;
 
             startButton.Callback = (self, t) => Summon(menu1, Alignment.Down);

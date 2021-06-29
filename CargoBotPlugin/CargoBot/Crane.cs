@@ -42,11 +42,11 @@ namespace CargoBot
             Box = null;
         }
 
+        public override int MinWidth => 4;
+        public override int MinHeight => Position + BoxSize + 2;
+
         public void GameOver() =>
             Game.EndGame(false);
-
-        protected override (int, int) GetSizeNative() =>
-            (4, Position + BoxSize + 2);
 
         protected override void ApplyThisNative()
         {
@@ -105,7 +105,7 @@ namespace CargoBot
         public void AddBox(Box box)
         {
             Box = Add(new Box(1, 2 + Position, BoxSize, box.Style.Wall.Value, box.Color));
-            Box.SetAlignmentInParent(Alignment.Down);
+            Box.SetParentAlignment(Alignment.Down);
         }
 
         public void MoveDown()
@@ -120,7 +120,10 @@ namespace CargoBot
                 return;
             }
             Position = max_Position;
-            Parent.UpdateChildSize();
+
+            SetWH(4, Position + BoxSize + 2, false);
+
+            Parent.Update();
             Box removed_box = null;
             if (Box == null)
             {
@@ -145,12 +148,15 @@ namespace CargoBot
 
         public void MoveUp()
         {
-            if (!Field.CalculateActive())
+            if (!Field.IsActive)
                 return;
             Position = 0;
+
             Apply();
             int old_height = Height;
-            Parent.UpdateChildSize();
+            SetWH(4, Position + BoxSize + 2, false);
+
+            Parent.Update();
             if (Box != null)
             {
                 Update();

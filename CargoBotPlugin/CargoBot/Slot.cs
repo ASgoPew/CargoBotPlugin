@@ -140,7 +140,7 @@ namespace CargoBot
 			}
 		}
 
-		public override void Invoke(Touch touch)
+		protected override void Invoke(Touch touch)
 		{
 			if (touch.State == TouchState.End && !GetAncestor<CargoBotGame>().Running)
 			{

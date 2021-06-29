@@ -14,7 +14,7 @@ namespace CargoBot
             : base(x, y, boxSize, boxSize * maxBoxes, null, style)
         {
             BoxSize = boxSize;
-            SetupLayout(Alignment.Down, Direction.Up, Side.Left, null, 0, false);
+            SetupLayout(Alignment.Down, Direction.Up, Side.Left, null, 0);
         }
 
         public void Reset()

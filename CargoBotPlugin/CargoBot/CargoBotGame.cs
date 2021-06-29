@@ -148,7 +148,7 @@ namespace CargoBot
 			SetWH(1 + Field.Width + 1, 1 + Field.Height + 4 + Toolbox.Height + 2 + 4 + 1 + 5, false);
 		}
 
-		public override void Invoke(Touch touch)
+		protected override void Invoke(Touch touch)
 		{
 			if (touch.State == TouchState.End && !Running)
 			{
@@ -354,7 +354,7 @@ namespace CargoBot
 		{
 			try
             {
-				if (!Running || !CalculateActive())
+				if (!Running || !IsActive)
 					return;
 
 				int? value = PullAction();
