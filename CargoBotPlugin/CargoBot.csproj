@@ -51,7 +51,8 @@
     <Reference Include="TUI">
       <HintPath>_References\TUI.dll</HintPath>
     </Reference>
-    <Reference Include="TUIPlugin">
+    <Reference Include="TUIPlugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>_References\TUIPlugin.dll</HintPath>
     </Reference>
   </ItemGroup>
